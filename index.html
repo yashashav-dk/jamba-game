@@ -386,38 +386,54 @@
       text-align: left;
     }
 
-    /* ===== Game Screen ===== */
+    /* ===== Counter Layout ===== */
     #game-screen {
       justify-content: flex-start;
       padding: 0;
       gap: 0;
+      overflow: hidden;
     }
 
-    .game-top-bar {
-      width: 100%;
+    .counter-wrap {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #DEB887, #D2A679);
+      display: grid;
+      grid-template-columns: 170px 1fr 1fr 80px 140px;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 6px;
+      padding: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top bar spans full width */
+    .counter-top-bar {
+      grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      padding: 10px 16px;
-      background: var(--jamba-dark);
+      gap: 10px;
+      padding: 6px 12px;
+      background: rgba(44,24,16,0.92);
+      border-radius: 8px;
       color: #fff;
-      gap: 12px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      flex-shrink: 0;
+      min-height: 36px;
     }
 
     .timer-bar-container {
       flex: 1;
-      height: 10px;
+      height: 8px;
       background: #555;
-      border-radius: 5px;
+      border-radius: 4px;
       overflow: hidden;
     }
 
     .timer-bar {
       height: 100%;
       background: var(--jamba-green);
-      border-radius: 5px;
+      border-radius: 4px;
       transition: width 1s linear, background 0.3s;
     }
 
@@ -433,319 +449,342 @@
       animation: timerPulse 0.5s ease-in-out infinite;
     }
 
-    .game-body {
-      display: flex;
-      flex: 1;
-      width: 100%;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .game-left {
-      width: 35%;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+    /* ===== Order Ticket ===== */
+    .order-ticket {
+      grid-column: 1 / 3;
+      grid-row: 2;
+      background: #fff;
+      border-radius: 4px;
+      padding: 8px 12px;
+      box-shadow: 3px 3px 10px rgba(0,0,0,0.18);
+      transform: rotate(-1.5deg);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem;
+      max-width: 300px;
+      line-height: 1.4;
+      z-index: 5;
+      max-height: 140px;
       overflow-y: auto;
     }
 
-    .customer-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--jamba-orange), var(--jamba-pink));
+    .order-ticket .ticket-header {
+      font-weight: 900;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed #aaa;
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+    }
+
+    .order-ticket .ticket-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 1px 0;
+    }
+
+    /* Score area top-right */
+    .counter-score-area {
+      grid-column: 3 / -1;
+      grid-row: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 4px 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--jamba-dark);
+    }
+
+    /* ===== Powders shelf above center ===== */
+    .counter-shelf {
+      grid-column: 2 / 5;
+      grid-row: 3;
+      align-self: start;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 8px;
+      margin-bottom: 4px;
+      max-height: 80px;
+    }
+
+    .counter-shelf .zone-label {
+      width: 100%;
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(44,24,16,0.6);
+      margin-bottom: 2px;
+    }
+
+    /* Main counter zones */
+    .counter-zones {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      display: grid;
+      grid-template-columns: 150px 1fr 1fr 80px 130px;
+      grid-template-rows: auto 1fr;
+      gap: 6px;
+      overflow-y: auto;
+      padding-top: 84px;
+      align-content: start;
+    }
+
+    .zone {
+      background: rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .zone-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(44,24,16,0.6);
+      margin-bottom: 1px;
+    }
+
+    .zone-juices {
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .zone-pb {
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .zone-dairy {
+      grid-column: 1;
+      grid-row: 4;
+    }
+
+    .zone-iqf {
+      grid-column: 2;
+      grid-row: 1 / 5;
+    }
+
+    .zone-hardpacks {
+      grid-column: 3;
+      grid-row: 1 / 5;
+    }
+
+    .zone-ice {
+      grid-column: 4;
+      grid-row: 1;
+      align-self: start;
+    }
+
+    .zone-blender {
+      grid-column: 5;
+      grid-row: 1 / 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.28);
+      border-radius: 10px;
+      padding: 6px;
+    }
+
+    /* ===== Ingredient Tiles ===== */
+    .ing-tile {
+      min-width: 60px;
+      min-height: 44px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.4);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #2C1810;
+      cursor: pointer;
+      text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      color: #fff;
-      flex-shrink: 0;
-      animation: slideIn 0.4s ease-out;
-    }
-
-    .speech-bubble {
-      background: #fff;
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.1s, box-shadow 0.1s, border-color 0.15s;
       position: relative;
-      text-align: center;
-      font-weight: 600;
-      max-width: 260px;
-      animation: bubblePop 0.4s ease-out 0.2s both;
+      user-select: none;
+      -webkit-user-select: none;
+      line-height: 1.15;
+      word-break: break-word;
     }
 
-    .speech-bubble::after {
-      content: "";
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-bottom: 10px solid #fff;
+    .ing-tile:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
     }
 
-    .reference-panel {
-      background: rgba(255,255,255,0.92);
-      border: 2px dashed var(--jamba-green);
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 0.82rem;
-      width: 100%;
-    }
-
-    .reference-panel h4 {
-      color: var(--jamba-green);
-      margin-bottom: 6px;
-    }
-
-    .game-right {
-      width: 65%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* ===== Blender Cup ===== */
-    .blender-section {
-      padding: 10px 16px;
-      background: #fff;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
-      max-height: 35%;
-      overflow-y: auto;
-    }
-
-    .blender-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .blender-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-      min-height: 32px;
-    }
-
-    .blender-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      background: #FFF3EC;
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .blender-item .remove-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #D32F2F;
-      font-weight: 900;
-      font-size: 1rem;
-      padding: 0 2px;
-      min-width: 20px;
-      min-height: 20px;
-    }
-
-    .blender-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* ===== Ingredient Station ===== */
-    .ingredient-station {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px 16px 20px;
-    }
-
-    .ingredient-group {
-      margin-bottom: 12px;
-    }
-
-    .ingredient-group-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #888;
-      margin-bottom: 6px;
-      padding-left: 4px;
-    }
-
-    .ingredient-tiles {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .ingredient-tile {
-      padding: 8px 14px;
-      border-radius: 12px;
-      border: 2px solid #eee;
-      background: #fff;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      transition: all 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
-    }
-
-    .ingredient-tile:hover {
-      border-color: var(--jamba-orange);
-      background: #FFF6F0;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .ingredient-tile:active {
-      transform: scale(0.95);
+    .ing-tile:active {
+      transform: scale(0.92);
       box-shadow: none;
     }
 
-    /* ===== Ingredient Popup ===== */
-    .ingredient-popup-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+    .ing-tile.tile-juice { background: #FFA94D; }
+    .ing-tile.tile-dairy { background: #E8D5B7; }
+    .ing-tile.tile-iqf { background: #FF9AAB; }
+    .ing-tile.tile-hardpack { background: #C8A2D4; }
+    .ing-tile.tile-powder { background: #98D8AA; }
+    .ing-tile.tile-ice { background: #B3E5FC; }
+    .ing-tile.tile-pb { background: #D4A574; }
+
+    .ing-tile.trainee-highlight {
+      border: 2.5px solid #00E676;
+      box-shadow: 0 0 8px rgba(0,230,118,0.5);
+      animation: glowPulse 1.5s ease-in-out infinite;
     }
 
-    .ingredient-popup {
-      background: #fff;
-      border-radius: 20px;
-      padding: 24px;
-      min-width: 260px;
-      text-align: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      animation: bubblePop 0.25s ease-out;
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 6px rgba(0,230,118,0.4); }
+      50% { box-shadow: 0 0 14px rgba(0,230,118,0.7); }
     }
 
-    .ingredient-popup h3 {
-      margin-bottom: 16px;
+    /* ===== Scoop Animations ===== */
+    @keyframes scoopPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.88); background-filter: brightness(1.2); }
+      100% { transform: scale(1); }
     }
 
-    .stepper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 16px;
+    .ing-tile.scooped {
+      animation: scoopPulse 0.2s ease-out;
     }
 
-    .stepper button {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 2px solid #ddd;
-      background: #fff;
-      font-size: 1.4rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .stepper button:hover {
-      border-color: var(--jamba-orange);
-      background: #FFF6F0;
-    }
-
-    .stepper .stepper-val {
-      font-size: 1.8rem;
+    .scoop-popup {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
       font-weight: 900;
-      min-width: 50px;
+      color: #2C1810;
+      pointer-events: none;
+      animation: floatUp 0.5s ease-out forwards;
+      z-index: 20;
     }
 
-    .popup-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-22px); }
     }
 
-    .crew-auto-label {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--jamba-green);
-      margin-bottom: 16px;
+    /* ===== Blender ===== */
+    .blender-cup {
+      width: 70px;
+      height: 160px;
+      border: 3px solid rgba(44,24,16,0.35);
+      border-radius: 8px 8px 14px 14px;
+      background: rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
     }
 
-    /* ===== Trainee Mode ===== */
-    .trainee-area {
-      flex: 1;
+    .blender-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transition: height 0.3s ease, background 0.3s ease;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .blender-controls {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      gap: 16px;
-      overflow-y: auto;
-    }
-
-    .trainee-question {
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-align: center;
-      max-width: 500px;
-    }
-
-    .trainee-options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      gap: 4px;
       width: 100%;
-      max-width: 400px;
     }
 
-    .trainee-option {
-      padding: 14px 20px;
-      border-radius: 14px;
-      border: 2px solid #ddd;
-      background: #fff;
-      font-size: 1rem;
-      font-weight: 600;
+    .blender-controls button {
+      width: 100%;
+      padding: 6px 4px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 800;
       cursor: pointer;
-      min-height: 48px;
-      transition: all 0.15s;
-      text-align: left;
+      min-height: 32px;
+      text-transform: uppercase;
+      transition: transform 0.1s;
     }
 
-    .trainee-option:hover:not(.answered) {
-      border-color: var(--jamba-orange);
-      background: #FFF6F0;
+    .blender-controls button:active {
+      transform: scale(0.95);
     }
 
-    .trainee-option.correct {
-      background: #C8E6C9;
-      border-color: var(--jamba-green);
+    .btn-blend { background: var(--jamba-orange); color: #fff; }
+    .btn-clear { background: #777; color: #fff; }
+    .btn-undo { background: #aaa; color: #fff; }
+
+    .blender-list {
+      width: 100%;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--jamba-dark);
+      line-height: 1.3;
+      background: rgba(255,255,255,0.4);
+      border-radius: 6px;
+      padding: 3px 4px;
     }
 
-    .trainee-option.wrong {
-      background: #FFCDD2;
-      border-color: #D32F2F;
+    .blender-list-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: rgba(44,24,16,0.5);
+      margin-top: 2px;
     }
 
-    .trainee-progress {
-      font-size: 0.85rem;
-      color: #888;
+    .blender-list-item {
+      padding: 1px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    @keyframes shakerVibrate {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      10% { transform: translateX(-3px) rotate(-3deg); }
+      20% { transform: translateX(3px) rotate(3deg); }
+      30% { transform: translateX(-3px) rotate(-2deg); }
+      40% { transform: translateX(3px) rotate(2deg); }
+      50% { transform: translateX(-2px) rotate(-1deg); }
+      60% { transform: translateX(2px) rotate(1deg); }
+      70% { transform: translateX(-1px) rotate(0); }
+      80% { transform: translateX(1px) rotate(0); }
+    }
+
+    .blender-cup.blending {
+      animation: shakerVibrate 0.6s ease-in-out;
+    }
+
+    /* ===== Mobile Responsive (Counter) ===== */
+    @media (max-width: 800px) {
+      .counter-wrap {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto 1fr;
+        overflow-y: auto;
+      }
+      .order-ticket { grid-column: 1; grid-row: 2; max-width: 100%; transform: none; }
+      .counter-score-area { grid-column: 1; grid-row: 2; justify-content: flex-start; }
+      .counter-shelf { grid-column: 1; grid-row: 3; }
+      .counter-zones {
+        grid-column: 1;
+        grid-row: 4;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        padding-top: 0;
+      }
+      .zone-juices, .zone-pb, .zone-dairy, .zone-iqf, .zone-hardpacks, .zone-ice, .zone-blender {
+        grid-column: auto;
+        grid-row: auto;
+      }
     }
 
     /* ===== Allergen Modal ===== */
@@ -862,21 +901,6 @@
     .results-allergen {
       padding: 10px 16px;
       border-radius: 12px;
-      font-weight: 600;
-    }
-
-    .trainee-results-list {
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .trainee-result-item {
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 0.9rem;
       font-weight: 600;
     }
 
@@ -997,37 +1021,8 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes shakerVibrate {
-      0%, 100% { transform: translateX(0) rotate(0); }
-      10% { transform: translateX(-3px) rotate(-3deg); }
-      20% { transform: translateX(3px) rotate(3deg); }
-      30% { transform: translateX(-3px) rotate(-2deg); }
-      40% { transform: translateX(3px) rotate(2deg); }
-      50% { transform: translateX(-2px) rotate(-1deg); }
-      60% { transform: translateX(2px) rotate(1deg); }
-      70% { transform: translateX(-1px) rotate(0); }
-      80% { transform: translateX(1px) rotate(0); }
-    }
-
-    .btn-blend-animate {
-      animation: shakerVibrate 0.5s ease-in-out;
-    }
-
     /* ===== Mobile Responsive ===== */
     @media (max-width: 700px) {
-      .game-body {
-        flex-direction: column;
-      }
-      .game-left {
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 10px;
-      }
-      .game-right {
-        width: 100%;
-      }
       .game-title {
         font-size: 2rem;
       }
@@ -1041,36 +1036,6 @@
     }
 
     @media (max-width: 600px) {
-      .game-body {
-        flex-direction: column;
-      }
-      .game-left {
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 8px;
-        gap: 8px;
-      }
-      .game-right {
-        width: 100%;
-        flex: 1;
-        min-height: 0;
-      }
-      .customer-avatar {
-        width: 50px;
-        height: 50px;
-        font-size: 1.4rem;
-      }
-      .speech-bubble {
-        padding: 10px;
-        font-size: 0.9rem;
-        max-width: 200px;
-      }
-      .reference-panel {
-        font-size: 0.75rem;
-        padding: 8px;
-      }
       .btn {
         min-width: 140px;
         min-height: 44px;
@@ -1082,11 +1047,6 @@
         min-height: 44px;
         padding: 8px 14px;
         font-size: 0.85rem;
-      }
-      .ingredient-tile {
-        padding: 6px 10px;
-        font-size: 0.78rem;
-        min-height: 44px;
       }
       .shift-complete-title {
         font-size: 1.8rem;
@@ -1143,8 +1103,7 @@
 
   <!-- ===== Game Screen ===== -->
   <div id="game-screen" class="screen">
-    <div class="game-top-bar" id="game-top-bar"></div>
-    <div class="game-body" id="game-body"></div>
+    <div class="counter-wrap" id="counter-wrap"></div>
   </div>
 
   <!-- ===== Results Screen ===== -->
@@ -1746,6 +1705,37 @@
     var SIZE_LABELS = { s: 'Small', m: 'Medium', l: 'Large' };
     var CUSTOMER_EMOJIS = ['😊', '😄', '🤗', '😎', '🥳', '😋', '🤩', '😃', '🙂', '😁'];
 
+    // ===== Counter Ingredient Layout =====
+    var COUNTER_JUICES = ["Orange Juice", "Pineapple Juice", "Passion-Mango Juice Blend", "Lemonade", "Peach Juice", "Peach Juice Blend", "Apple-Strawberry Juice Blend", "Mixed Berry Juice Blend", "Pomegranate Juice Blend"];
+    var COUNTER_PB = ["Peanut Butter"];
+    var COUNTER_DAIRY = ["2% Milk", "Soymilk", "Oatmilk", "Almondmilk", "Vanilla Coconutmilk", "Greek Yogurt"];
+    var COUNTER_IQF = ["IQF Strawberries", "IQF Blueberries", "IQF Mango", "IQF Peaches", "IQF Bananas", "IQF Kale", "IQF Pineapple"];
+    var COUNTER_HARDPACKS = ["Raspberry Hardpack", "Orange Hardpack", "Lime Hardpack", "Pineapple Hardpack", "Frozen Yogurt"];
+    var COUNTER_POWDERS = ["Protein - Choice", "Moo'd Powder", "Matcha Base", "Tropical Greens", "Daily Vitamin & Zinc", "Blue Spirulina", "Ginger Puree", "Acai Concentrate", "Honey Drizzle", "Agave Drizzle"];
+    var COUNTER_ICE = ["Ice"];
+
+    // Scoop history for undo
+    var scoopHistory = [];
+
+    // Fill color mapping
+    var FILL_COLORS = {
+      "Orange Juice": "#FFA94D", "Pineapple Juice": "#FFD93D", "Passion-Mango Juice Blend": "#FFB347",
+      "Lemonade": "#FFF176", "Peach Juice": "#FFCC80", "Peach Juice Blend": "#FFCC80",
+      "Apple-Strawberry Juice Blend": "#FF8A80", "Mixed Berry Juice Blend": "#CE93D8",
+      "Pomegranate Juice Blend": "#E57373",
+      "2% Milk": "#F5F5F5", "Soymilk": "#FFF8E1", "Oatmilk": "#EFEBE9",
+      "Almondmilk": "#FFF3E0", "Vanilla Coconutmilk": "#FFFDE7", "Greek Yogurt": "#FAFAFA",
+      "Raspberry Hardpack": "#F48FB1", "Orange Hardpack": "#FFAB91",
+      "Lime Hardpack": "#A5D6A7", "Pineapple Hardpack": "#FFF59D", "Frozen Yogurt": "#E0E0E0",
+      "IQF Strawberries": "#EF9A9A", "IQF Blueberries": "#9FA8DA", "IQF Mango": "#FFE082",
+      "IQF Peaches": "#FFCC80", "IQF Bananas": "#FFF9C4", "IQF Kale": "#A5D6A7",
+      "IQF Pineapple": "#FFF176",
+      "Peanut Butter": "#A1887F", "Protein - Choice": "#D7CCC8", "Moo'd Powder": "#8D6E63",
+      "Matcha Base": "#81C784", "Tropical Greens": "#66BB6A", "Daily Vitamin & Zinc": "#FFF176",
+      "Blue Spirulina": "#64B5F6", "Ginger Puree": "#FFE0B2", "Acai Concentrate": "#7E57C2",
+      "Honey Drizzle": "#FFD54F", "Agave Drizzle": "#FFE082", "Ice": "#E3F2FD"
+    };
+
     function startShift(categoryId, difficultyId) {
       var smoothies = RECIPES[categoryId].smoothies;
       var orders = [];
@@ -1773,7 +1763,6 @@
       var orders = [];
       missedRecipes.forEach(function(missed) {
         var sm = null;
-        // Find the recipe in RECIPES
         var smoothies = RECIPES[GAME_STATE.category].smoothies;
         for (var i = 0; i < smoothies.length; i++) {
           if (smoothies[i].name === missed.recipe) {
@@ -1800,6 +1789,53 @@
       showCustomer(0);
     }
 
+    function escapeQuote(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+
+    function shuffleArray(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+      }
+    }
+
+    // ===== Counter Rendering =====
+    function getTileClass(ingredientName) {
+      if (COUNTER_JUICES.indexOf(ingredientName) !== -1) return 'tile-juice';
+      if (COUNTER_DAIRY.indexOf(ingredientName) !== -1) return 'tile-dairy';
+      if (COUNTER_IQF.indexOf(ingredientName) !== -1) return 'tile-iqf';
+      if (COUNTER_HARDPACKS.indexOf(ingredientName) !== -1) return 'tile-hardpack';
+      if (COUNTER_POWDERS.indexOf(ingredientName) !== -1) return 'tile-powder';
+      if (COUNTER_ICE.indexOf(ingredientName) !== -1) return 'tile-ice';
+      if (COUNTER_PB.indexOf(ingredientName) !== -1) return 'tile-pb';
+      return 'tile-powder';
+    }
+
+    function isTraineeHighlight(ingredientName) {
+      if (GAME_STATE.difficulty !== 'trainee') return false;
+      var recipe = GAME_STATE.currentRecipe;
+      if (!recipe) return false;
+      for (var i = 0; i < recipe.ingredients.length; i++) {
+        if (recipe.ingredients[i].name === ingredientName) return true;
+      }
+      return false;
+    }
+
+    function buildTile(name) {
+      var cls = 'ing-tile ' + getTileClass(name);
+      if (isTraineeHighlight(name)) cls += ' trainee-highlight';
+      return '<div class="' + cls + '" data-ing="' + name.replace(/"/g, '&quot;') + '" onclick="scoopIngredient(this, \'' + escapeQuote(name) + '\')">' + name + '</div>';
+    }
+
+    function buildZone(label, items, extraClass) {
+      var html = '<div class="zone ' + (extraClass || '') + '">';
+      html += '<div class="zone-label">' + label + '</div>';
+      items.forEach(function(item) { html += buildTile(item); });
+      html += '</div>';
+      return html;
+    }
+
     function showCustomer(index) {
       if (GAME_STATE.timerInterval) {
         clearInterval(GAME_STATE.timerInterval);
@@ -1811,82 +1847,305 @@
       GAME_STATE.size = order.size;
       GAME_STATE.blenderContents = [];
       GAME_STATE.customerIndex = index;
+      scoopHistory = [];
 
       var diff = DIFFICULTIES.find(function(d) { return d.id === GAME_STATE.difficulty; });
-      var emoji = CUSTOMER_EMOJIS[index % CUSTOMER_EMOJIS.length];
       var totalOrders = GAME_STATE.shiftOrders.length;
+      var isShiftLead = GAME_STATE.difficulty === 'shiftlead';
+
+      var wrap = document.getElementById('counter-wrap');
+      var html = '';
 
       // Top bar
-      var topBar = document.getElementById('game-top-bar');
-      topBar.innerHTML = '<span>' + (GAME_STATE.isPracticeShift ? 'Practice ' : 'Shift ') + (index + 1) + '/' + totalOrders + '</span>' +
-        '<div class="timer-bar-container"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>' +
-        '<span id="score-display">Score: ' + GAME_STATE.score + '</span>';
-
-      // Game body
-      var gameBody = document.getElementById('game-body');
-
-      if (GAME_STATE.difficulty === 'trainee') {
-        // Trainee mode
-        gameBody.innerHTML =
-          '<div class="game-left">' +
-            '<div class="customer-avatar">' + emoji + '</div>' +
-            '<div class="speech-bubble">Can I get a <b>' + SIZE_LABELS[order.size] + ' ' + order.recipe.name + '</b>?</div>' +
-            (GAME_STATE.isRetry ? buildReferencePanel(order.recipe, order.size) : '') +
-          '</div>' +
-          '<div class="game-right">' +
-            '<div class="trainee-area" id="trainee-area"></div>' +
-          '</div>';
-        renderTraineeMode(order.recipe);
+      html += '<div class="counter-top-bar">';
+      html += '<span>' + (GAME_STATE.isPracticeShift ? 'Practice ' : 'Order ') + (index + 1) + '/' + totalOrders + '</span>';
+      if (diff.timer > 0) {
+        html += '<div class="timer-bar-container"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>';
       } else {
-        // Crew and Shift Lead modes - both use ingredient station
-        gameBody.innerHTML =
-          '<div class="game-left">' +
-            '<div class="customer-avatar">' + emoji + '</div>' +
-            '<div class="speech-bubble">Can I get a <b>' + SIZE_LABELS[order.size] + ' ' + order.recipe.name + '</b>?</div>' +
-            (GAME_STATE.isRetry ? buildReferencePanel(order.recipe, order.size) : '') +
-          '</div>' +
-          '<div class="game-right">' +
-            '<div class="blender-section" id="blender-section">' +
-              '<div class="blender-title">🥤 Blender Cup</div>' +
-              '<div class="blender-items" id="blender-items"></div>' +
-              '<div class="blender-actions">' +
-                '<button class="btn btn-sm btn-dark" onclick="clearBlender()">CLEAR</button>' +
-                '<button class="btn btn-sm btn-orange" id="blend-btn" onclick="handleBlendClick()">BLEND</button>' +
-              '</div>' +
-            '</div>' +
-            '<div class="ingredient-station" id="ingredient-station"></div>' +
-          '</div>';
-        renderIngredientStation();
-        renderBlender();
+        html += '<div style="flex:1;"></div>';
+      }
+      html += '<span id="score-display">Score: ' + GAME_STATE.score + '</span>';
+      html += '</div>';
 
-        // Start timer if applicable
-        if (diff.timer > 0) {
-          startTimer(diff.timer);
+      // Order ticket
+      html += '<div class="order-ticket">';
+      html += '<div class="ticket-header">#' + String(index + 1).padStart(2, '0') + ' - ' + SIZE_LABELS[order.size] + '</div>';
+      html += '<div style="font-weight:700;margin-bottom:4px;">' + order.recipe.name + '</div>';
+      if (!isShiftLead) {
+        // Trainee and Crew show ingredients + scoops
+        order.recipe.ingredients.forEach(function(ing) {
+          html += '<div class="ticket-item"><span>' + ing.name + '</span><span>' + ing[order.size] + '</span></div>';
+        });
+      }
+      html += '</div>';
+
+      // Score area (empty spacer for grid)
+      html += '<div class="counter-score-area"></div>';
+
+      // Powders shelf
+      html += '<div class="counter-shelf">';
+      html += '<div class="zone-label">Powders &amp; Extras</div>';
+      COUNTER_POWDERS.forEach(function(item) { html += buildTile(item); });
+      html += '</div>';
+
+      // Main counter zones
+      html += '<div class="counter-zones">';
+      html += buildZone('Juices', COUNTER_JUICES, 'zone-juices');
+      html += buildZone('PB', COUNTER_PB, 'zone-pb');
+      html += buildZone('Dairy / Milk', COUNTER_DAIRY, 'zone-dairy');
+      html += buildZone('IQF Fruits', COUNTER_IQF, 'zone-iqf');
+      html += buildZone('Hardpacks', COUNTER_HARDPACKS, 'zone-hardpacks');
+      html += buildZone('Ice', COUNTER_ICE, 'zone-ice');
+
+      // Blender zone
+      html += '<div class="zone zone-blender">';
+      html += '<div class="zone-label">Blender</div>';
+      html += '<div class="blender-cup" id="blender-cup"><div class="blender-fill" id="blender-fill"></div></div>';
+      html += '<div class="blender-controls">';
+      html += '<button class="btn-blend" id="blend-btn" onclick="handleBlendClick()">BLEND</button>';
+      html += '<button class="btn-clear" onclick="clearBlender()">CLEAR</button>';
+      html += '<button class="btn-undo" onclick="undoScoop()">UNDO</button>';
+      html += '</div>';
+      html += '<div class="blender-list-label">Added:</div>';
+      html += '<div class="blender-list" id="blender-list"><span style="color:#999;">empty</span></div>';
+      html += '</div>';
+
+      html += '</div>'; // end counter-zones
+
+      wrap.innerHTML = html;
+
+      // Start timer if applicable
+      if (diff.timer > 0) {
+        startTimer(diff.timer);
+      }
+    }
+
+    // ===== Click-to-Scoop =====
+    function scoopIngredient(tileEl, name) {
+      // Determine scoop amount (1 for most, 0.5 for half-scoop items)
+      var scoopAmt = getScoopAmount(name);
+
+      // Check if ingredient uses string values (like Honey Drizzle "1x")
+      var strVal = getStringRecipeValue(name);
+      if (strVal !== null) {
+        // For string-valued ingredients, set the whole value at once
+        var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === name; });
+        if (existing) {
+          // Already added, toggle through string options
+          var opts = getStringOptionsForIngredient(name);
+          var curIdx = opts.indexOf(String(existing.amount));
+          var nextIdx = (curIdx + 1) % opts.length;
+          scoopHistory.push({ name: name, prevAmount: existing.amount, wasNew: false });
+          existing.amount = opts[nextIdx];
+        } else {
+          var opts = getStringOptionsForIngredient(name);
+          scoopHistory.push({ name: name, prevAmount: null, wasNew: true });
+          GAME_STATE.blenderContents.push({ name: name, amount: opts[0] || '1x' });
+        }
+      } else {
+        // Numeric scoop
+        var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === name; });
+        if (existing) {
+          scoopHistory.push({ name: name, prevAmount: existing.amount, wasNew: false });
+          existing.amount = Math.round((existing.amount + scoopAmt) * 10) / 10;
+        } else {
+          scoopHistory.push({ name: name, prevAmount: null, wasNew: true });
+          GAME_STATE.blenderContents.push({ name: name, amount: scoopAmt });
         }
       }
+
+      // Visual feedback: pulse tile
+      if (tileEl) {
+        tileEl.classList.remove('scooped');
+        void tileEl.offsetWidth; // reflow
+        tileEl.classList.add('scooped');
+
+        // Float "+1" popup
+        var popup = document.createElement('span');
+        popup.className = 'scoop-popup';
+        popup.textContent = '+' + (strVal !== null ? '1' : scoopAmt);
+        tileEl.style.position = 'relative';
+        tileEl.appendChild(popup);
+        setTimeout(function() { popup.remove(); }, 550);
+      }
+
+      updateBlenderUI();
+    }
+
+    function getScoopAmount(name) {
+      // Check if this ingredient commonly uses 0.5 scoops
+      var allCats = Object.keys(RECIPES);
+      for (var c = 0; c < allCats.length; c++) {
+        var smoothies = RECIPES[allCats[c]].smoothies;
+        for (var s = 0; s < smoothies.length; s++) {
+          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
+            if (smoothies[s].ingredients[ing].name === name) {
+              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
+              for (var v = 0; v < vals.length; v++) {
+                if (typeof vals[v] === 'number' && vals[v] % 1 !== 0) return 0.5;
+              }
+            }
+          }
+        }
+      }
+      return 1;
+    }
+
+    function getStringRecipeValue(name) {
+      // Returns the string value for the current recipe/size if it's a string, else null
+      var recipe = GAME_STATE.currentRecipe;
+      var size = GAME_STATE.size;
+      if (!recipe || !size) return null;
+      for (var i = 0; i < recipe.ingredients.length; i++) {
+        if (recipe.ingredients[i].name === name) {
+          var val = recipe.ingredients[i][size];
+          if (typeof val === 'string') return val;
+        }
+      }
+      // Also check globally
+      var allCats = Object.keys(RECIPES);
+      for (var c = 0; c < allCats.length; c++) {
+        var smoothies = RECIPES[allCats[c]].smoothies;
+        for (var s = 0; s < smoothies.length; s++) {
+          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
+            if (smoothies[s].ingredients[ing].name === name) {
+              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
+              for (var v = 0; v < vals.length; v++) {
+                if (typeof vals[v] === 'string') return vals[v];
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function getStringOptionsForIngredient(ingredientName) {
+      var options = {};
+      var allCats = Object.keys(RECIPES);
+      for (var c = 0; c < allCats.length; c++) {
+        var smoothies = RECIPES[allCats[c]].smoothies;
+        for (var s = 0; s < smoothies.length; s++) {
+          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
+            if (smoothies[s].ingredients[ing].name === ingredientName) {
+              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
+              vals.forEach(function(v) {
+                if (typeof v === 'string') options[v] = true;
+              });
+            }
+          }
+        }
+      }
+      return Object.keys(options);
+    }
+
+    function undoScoop() {
+      if (scoopHistory.length === 0) return;
+      var last = scoopHistory.pop();
+      if (last.wasNew) {
+        // Remove the ingredient entirely
+        GAME_STATE.blenderContents = GAME_STATE.blenderContents.filter(function(b) { return b.name !== last.name; });
+      } else {
+        // Restore previous amount
+        var item = GAME_STATE.blenderContents.find(function(b) { return b.name === last.name; });
+        if (item) item.amount = last.prevAmount;
+      }
+      updateBlenderUI();
+    }
+
+    function clearBlender() {
+      GAME_STATE.blenderContents = [];
+      scoopHistory = [];
+      updateBlenderUI();
+    }
+
+    // ===== Blender UI =====
+    function updateBlenderUI() {
+      // Update fill level
+      var fillEl = document.getElementById('blender-fill');
+      var listEl = document.getElementById('blender-list');
+      if (!fillEl || !listEl) return;
+
+      var totalScoops = 0;
+      var colorParts = [];
+      GAME_STATE.blenderContents.forEach(function(item) {
+        var amt = typeof item.amount === 'number' ? item.amount : 1;
+        totalScoops += amt;
+        var col = FILL_COLORS[item.name] || '#ccc';
+        colorParts.push({ color: col, weight: amt });
+      });
+
+      // Fill height: max 20 scoops = 100%
+      var fillPct = Math.min(totalScoops / 20, 1) * 100;
+      fillEl.style.height = fillPct + '%';
+
+      // Blend colors weighted
+      if (colorParts.length > 0) {
+        fillEl.style.background = blendColors(colorParts);
+      } else {
+        fillEl.style.background = 'transparent';
+        fillEl.style.height = '0%';
+      }
+
+      // Update list
+      if (GAME_STATE.blenderContents.length === 0) {
+        listEl.innerHTML = '<span style="color:#999;">empty</span>';
+      } else {
+        var html = '';
+        GAME_STATE.blenderContents.forEach(function(item) {
+          html += '<div class="blender-list-item">' + item.name + ' x' + item.amount + '</div>';
+        });
+        listEl.innerHTML = html;
+        listEl.scrollTop = listEl.scrollHeight;
+      }
+    }
+
+    function blendColors(parts) {
+      var totalWeight = 0;
+      var r = 0, g = 0, b = 0;
+      parts.forEach(function(p) {
+        var c = hexToRgb(p.color);
+        if (c) {
+          r += c.r * p.weight;
+          g += c.g * p.weight;
+          b += c.b * p.weight;
+          totalWeight += p.weight;
+        }
+      });
+      if (totalWeight === 0) return 'transparent';
+      r = Math.round(r / totalWeight);
+      g = Math.round(g / totalWeight);
+      b = Math.round(b / totalWeight);
+      return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
     }
 
     function handleBlendClick() {
-      var btn = document.getElementById('blend-btn');
-      if (btn) {
-        btn.classList.add('btn-blend-animate');
-        setTimeout(function() {
-          btn.classList.remove('btn-blend-animate');
-        }, 500);
+      var cup = document.getElementById('blender-cup');
+      if (cup) {
+        cup.classList.remove('blending');
+        void cup.offsetWidth;
+        cup.classList.add('blending');
       }
-      // Small delay for animation
       setTimeout(function() {
         blendRecipe();
-      }, 300);
+      }, 400);
     }
 
-    function buildReferencePanel(recipe, size) {
-      var html = '<div class="reference-panel"><h4>Reference Recipe</h4>';
-      recipe.ingredients.forEach(function(ing) {
-        html += '<div>' + ing.name + ': ' + ing[size] + '</div>';
-      });
-      html += '</div>';
-      return html;
+    function blendRecipe() {
+      if (GAME_STATE.timerInterval) {
+        clearInterval(GAME_STATE.timerInterval);
+        GAME_STATE.timerInterval = null;
+      }
+      showAllergenCheck();
     }
 
     // ===== Timer =====
@@ -1901,14 +2160,9 @@
         if (GAME_STATE.timer <= 0) {
           clearInterval(GAME_STATE.timerInterval);
           GAME_STATE.timerInterval = null;
-          // Close any open popups before auto-submitting
-          var popup = document.getElementById('ingredient-popup-overlay');
-          if (popup) popup.remove();
-          // Check if allergen modal is open - if so, auto-submit it
           var allergenModal = document.getElementById('allergen-modal');
           if (allergenModal) {
             allergenModal.remove();
-            // Auto-fail allergen check on timeout
             GAME_STATE.allergenScore = -10;
             finishGrading(false);
           } else {
@@ -1929,343 +2183,9 @@
       } else if (pct < 66) {
         bar.classList.add('yellow');
       }
-      // Pulse when under 10 seconds
       if (current <= 10 && current > 0) {
         bar.classList.add('pulsing');
       }
-    }
-
-    // ===== Ingredient Station =====
-    function renderIngredientStation() {
-      var station = document.getElementById('ingredient-station');
-      var html = '';
-      INGREDIENT_GROUPS.forEach(function(group) {
-        html += '<div class="ingredient-group">';
-        html += '<div class="ingredient-group-title" style="border-left:4px solid ' + group.color + '; padding-left:8px;">' + group.name + '</div>';
-        html += '<div class="ingredient-tiles">';
-        group.items.forEach(function(item) {
-          html += '<div class="ingredient-tile" onclick="openIngredientPopup(\'' + escapeQuote(item) + '\')" style="border-left:3px solid ' + group.color + '">' + item + '</div>';
-        });
-        html += '</div></div>';
-      });
-      station.innerHTML = html;
-    }
-
-    function escapeQuote(str) {
-      return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-    }
-
-    // ===== Task 6 & 7: Ingredient Popup - mode-aware =====
-    function getRecipeAmountForIngredient(ingredientName) {
-      // Look up the correct amount for this ingredient in the current recipe/size
-      var recipe = GAME_STATE.currentRecipe;
-      var size = GAME_STATE.size;
-      if (!recipe || !size) return null;
-      for (var i = 0; i < recipe.ingredients.length; i++) {
-        if (recipe.ingredients[i].name === ingredientName) {
-          return recipe.ingredients[i][size];
-        }
-      }
-      return null;
-    }
-
-    function isStringValue(val) {
-      return typeof val === 'string' && isNaN(parseFloat(val));
-    }
-
-    function getStepSize(ingredientName) {
-      // Check if any recipe has decimal values for this ingredient
-      var recipe = GAME_STATE.currentRecipe;
-      var size = GAME_STATE.size;
-      if (recipe) {
-        for (var i = 0; i < recipe.ingredients.length; i++) {
-          if (recipe.ingredients[i].name === ingredientName) {
-            var val = recipe.ingredients[i][size];
-            if (typeof val === 'number' && val % 1 !== 0) {
-              return 0.5;
-            }
-            // Check all sizes for this ingredient
-            var vs = recipe.ingredients[i].s;
-            var vm = recipe.ingredients[i].m;
-            var vl = recipe.ingredients[i].l;
-            if ((typeof vs === 'number' && vs % 1 !== 0) ||
-                (typeof vm === 'number' && vm % 1 !== 0) ||
-                (typeof vl === 'number' && vl % 1 !== 0)) {
-              return 0.5;
-            }
-          }
-        }
-      }
-      // Also check globally (e.g., Agave Drizzle always uses 0.5)
-      var allCats = Object.keys(RECIPES);
-      for (var c = 0; c < allCats.length; c++) {
-        var smoothies = RECIPES[allCats[c]].smoothies;
-        for (var s = 0; s < smoothies.length; s++) {
-          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
-            if (smoothies[s].ingredients[ing].name === ingredientName) {
-              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
-              for (var v = 0; v < vals.length; v++) {
-                if (typeof vals[v] === 'number' && vals[v] % 1 !== 0) return 0.5;
-              }
-            }
-          }
-        }
-      }
-      return 1;
-    }
-
-    function openIngredientPopup(ingredientName) {
-      var isCrew = GAME_STATE.difficulty === 'crew';
-      var recipeAmount = getRecipeAmountForIngredient(ingredientName);
-      var isStr = recipeAmount !== null && isStringValue(recipeAmount);
-
-      // Check if already in blender
-      var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === ingredientName; });
-
-      var overlay = document.createElement('div');
-      overlay.className = 'ingredient-popup-overlay';
-      overlay.id = 'ingredient-popup-overlay';
-      overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
-
-      var popupHtml = '<div class="ingredient-popup"><h3>' + ingredientName + '</h3>';
-
-      if (isCrew) {
-        // Crew mode: auto-fill scoops, hide stepper
-        var autoAmount = recipeAmount !== null ? recipeAmount : 1;
-        popupHtml += '<div class="crew-auto-label" id="stepper-val">' + autoAmount + '</div>';
-        popupHtml += '<div style="font-size:0.85rem;color:#888;margin-bottom:12px;">Auto-filled for ' + SIZE_LABELS[GAME_STATE.size] + '</div>';
-        popupHtml += '<div class="popup-actions">';
-        popupHtml += '<button class="btn btn-sm btn-dark" onclick="document.getElementById(\'ingredient-popup-overlay\').remove()">CANCEL</button>';
-        popupHtml += '<button class="btn btn-sm btn-green" onclick="addIngredient(\'' + escapeQuote(ingredientName) + '\')">ADD</button>';
-        popupHtml += '</div>';
-      } else {
-        // Shift Lead mode: full stepper
-        if (isStr) {
-          // String value (like "1x", "1.5x") - show as text, no stepper
-          var startVal = existing ? existing.amount : (recipeAmount || '1x');
-          popupHtml += '<div class="stepper">';
-          popupHtml += '<span class="stepper-val" id="stepper-val" style="font-size:1.6rem;">' + startVal + '</span>';
-          popupHtml += '</div>';
-          popupHtml += '<div style="font-size:0.8rem;color:#888;margin-bottom:12px;">Enter the correct value</div>';
-          // Build option buttons for known string values
-          var stringOptions = getStringOptionsForIngredient(ingredientName);
-          if (stringOptions.length > 0) {
-            popupHtml += '<div style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">';
-            stringOptions.forEach(function(opt) {
-              popupHtml += '<button class="btn btn-sm" style="min-width:60px;background:#eee;color:#333;" onclick="document.getElementById(\'stepper-val\').textContent=\'' + opt + '\'">' + opt + '</button>';
-            });
-            popupHtml += '</div>';
-          }
-        } else {
-          var step = getStepSize(ingredientName);
-          var startVal = existing ? existing.amount : (step === 0.5 ? 0.5 : 1);
-          popupHtml += '<div class="stepper">';
-          popupHtml += '<button onclick="stepperChange(' + (-step) + ')">-</button>';
-          popupHtml += '<span class="stepper-val" id="stepper-val">' + startVal + '</span>';
-          popupHtml += '<button onclick="stepperChange(' + step + ')">+</button>';
-          popupHtml += '</div>';
-        }
-        popupHtml += '<div class="popup-actions">';
-        popupHtml += '<button class="btn btn-sm btn-dark" onclick="document.getElementById(\'ingredient-popup-overlay\').remove()">CANCEL</button>';
-        popupHtml += '<button class="btn btn-sm btn-green" onclick="addIngredient(\'' + escapeQuote(ingredientName) + '\')">ADD</button>';
-        popupHtml += '</div>';
-      }
-
-      popupHtml += '</div>';
-      overlay.innerHTML = popupHtml;
-      document.body.appendChild(overlay);
-    }
-
-    function getStringOptionsForIngredient(ingredientName) {
-      // Collect all unique string values for this ingredient across all sizes
-      var options = {};
-      var allCats = Object.keys(RECIPES);
-      for (var c = 0; c < allCats.length; c++) {
-        var smoothies = RECIPES[allCats[c]].smoothies;
-        for (var s = 0; s < smoothies.length; s++) {
-          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
-            if (smoothies[s].ingredients[ing].name === ingredientName) {
-              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
-              vals.forEach(function(v) {
-                if (typeof v === 'string') options[v] = true;
-              });
-            }
-          }
-        }
-      }
-      return Object.keys(options);
-    }
-
-    function stepperChange(delta) {
-      var el = document.getElementById('stepper-val');
-      if (!el) return;
-      var currentText = el.textContent;
-      // Don't increment string values
-      if (isNaN(parseFloat(currentText))) return;
-      var val = parseFloat(currentText) + delta;
-      var step = Math.abs(delta);
-      var minVal = step < 1 ? 0.5 : 0.5;
-      if (val < minVal) val = minVal;
-      if (val > 20) val = 20;
-      // Round to avoid floating point issues
-      val = Math.round(val * 10) / 10;
-      el.textContent = val;
-    }
-
-    function addIngredient(name) {
-      var el = document.getElementById('stepper-val');
-      if (!el) return;
-      var rawVal = el.textContent.trim();
-      var amount;
-
-      // Handle string values (like "1x", "1.5x")
-      if (isNaN(parseFloat(rawVal)) || (rawVal.indexOf('x') !== -1)) {
-        amount = rawVal;
-      } else {
-        amount = parseFloat(rawVal);
-      }
-
-      // Update or add
-      var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === name; });
-      if (existing) {
-        existing.amount = amount;
-      } else {
-        GAME_STATE.blenderContents.push({ name: name, amount: amount });
-      }
-
-      var overlay = document.getElementById('ingredient-popup-overlay');
-      if (overlay) overlay.remove();
-      renderBlender();
-    }
-
-    function renderBlender() {
-      var itemsEl = document.getElementById('blender-items');
-      if (!itemsEl) return;
-
-      if (GAME_STATE.blenderContents.length === 0) {
-        itemsEl.innerHTML = '<span style="color:#aaa;font-size:0.85rem;">Empty -- add ingredients!</span>';
-        return;
-      }
-
-      var html = '';
-      GAME_STATE.blenderContents.forEach(function(item, idx) {
-        html += '<div class="blender-item">' + item.name + ' x' + item.amount +
-          '<button class="remove-btn" onclick="removeIngredient(' + idx + ')">x</button></div>';
-      });
-      itemsEl.innerHTML = html;
-    }
-
-    function removeIngredient(idx) {
-      GAME_STATE.blenderContents.splice(idx, 1);
-      renderBlender();
-    }
-
-    function clearBlender() {
-      GAME_STATE.blenderContents = [];
-      renderBlender();
-    }
-
-    function blendRecipe() {
-      if (GAME_STATE.timerInterval) {
-        clearInterval(GAME_STATE.timerInterval);
-        GAME_STATE.timerInterval = null;
-      }
-      // Close any open ingredient popup
-      var popup = document.getElementById('ingredient-popup-overlay');
-      if (popup) popup.remove();
-      // Show allergen check
-      showAllergenCheck();
-    }
-
-    // ===== Task 4: Trainee Mode =====
-    function renderTraineeMode(recipe) {
-      GAME_STATE.traineeState = {
-        questions: [],
-        currentQ: 0,
-        answers: []
-      };
-
-      // Build questions: one per ingredient
-      var allIngredients = getAllIngredientNames();
-      var correctIngredients = recipe.ingredients.map(function(i) { return i.name; });
-
-      correctIngredients.forEach(function(correctName) {
-        // Get 3 wrong options
-        var wrongs = allIngredients.filter(function(n) { return correctIngredients.indexOf(n) === -1; });
-        shuffleArray(wrongs);
-        var options = [correctName].concat(wrongs.slice(0, 3));
-        shuffleArray(options);
-        GAME_STATE.traineeState.questions.push({
-          correct: correctName,
-          options: options
-        });
-      });
-
-      renderTraineeQuestion();
-    }
-
-    function getAllIngredientNames() {
-      var names = {};
-      INGREDIENT_GROUPS.forEach(function(g) {
-        g.items.forEach(function(i) { names[i] = true; });
-      });
-      return Object.keys(names);
-    }
-
-    function shuffleArray(arr) {
-      for (var i = arr.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
-      }
-    }
-
-    function renderTraineeQuestion() {
-      var state = GAME_STATE.traineeState;
-      var area = document.getElementById('trainee-area');
-      if (!area) return;
-
-      if (state.currentQ >= state.questions.length) {
-        // Done with questions, show allergen check
-        showAllergenCheck();
-        return;
-      }
-
-      var q = state.questions[state.currentQ];
-      var html = '<div class="trainee-progress">Question ' + (state.currentQ + 1) + ' of ' + state.questions.length + '</div>';
-      html += '<div class="trainee-question">Which of these is in <b>' + GAME_STATE.currentRecipe.name + '</b>?</div>';
-      html += '<div class="trainee-options">';
-      q.options.forEach(function(opt, idx) {
-        html += '<button class="trainee-option" id="trainee-opt-' + idx + '" onclick="handleTraineeAnswer(' + idx + ', \'' + escapeQuote(opt) + '\')">' + opt + '</button>';
-      });
-      html += '</div>';
-      area.innerHTML = html;
-    }
-
-    function handleTraineeAnswer(idx, chosen) {
-      var state = GAME_STATE.traineeState;
-      var q = state.questions[state.currentQ];
-      var isCorrect = chosen === q.correct;
-
-      state.answers.push({ question: state.currentQ, chosen: chosen, correct: q.correct, isCorrect: isCorrect });
-
-      // Mark all options
-      q.options.forEach(function(opt, i) {
-        var btn = document.getElementById('trainee-opt-' + i);
-        if (!btn) return;
-        btn.classList.add('answered');
-        btn.style.pointerEvents = 'none';
-        if (opt === q.correct) {
-          btn.classList.add('correct');
-        } else if (i === idx && !isCorrect) {
-          btn.classList.add('wrong');
-        }
-      });
-
-      // Advance after delay
-      setTimeout(function() {
-        state.currentQ++;
-        renderTraineeQuestion();
-      }, 1000);
     }
 
     // ===== Task 5: Allergen Check Modal =====
@@ -2348,7 +2268,6 @@
       var missing = [];
       var extra = [];
       var score = 0;
-      var isCrew = GAME_STATE.difficulty === 'crew';
 
       var recipeMap = {};
       recipe.ingredients.forEach(function(ing) {
@@ -2360,23 +2279,16 @@
         playerMap[p.name] = p.amount;
       });
 
-      // Check recipe ingredients
+      // Check recipe ingredients - all modes check exact amounts
       Object.keys(recipeMap).forEach(function(name) {
         var expected = recipeMap[name];
         if (playerMap[name] !== undefined) {
-          if (isCrew) {
-            // Crew mode: only check ingredient presence (scoops are auto-correct)
+          if (String(playerMap[name]) === String(expected)) {
             correct.push({ name: name, expected: expected, got: playerMap[name] });
             score += 10;
           } else {
-            // Shift Lead: check exact amounts
-            if (String(playerMap[name]) === String(expected)) {
-              correct.push({ name: name, expected: expected, got: playerMap[name] });
-              score += 10;
-            } else {
-              wrong.push({ name: name, expected: expected, got: playerMap[name] });
-              score -= 5;
-            }
+            wrong.push({ name: name, expected: expected, got: playerMap[name] });
+            score -= 5;
           }
         } else {
           missing.push({ name: name, expected: expected });
@@ -2398,42 +2310,15 @@
       return { correct: correct, wrong: wrong, missing: missing, extra: extra, score: score, isPerfect: isPerfect };
     }
 
-    function gradeTrainee() {
-      var state = GAME_STATE.traineeState;
-      var score = 0;
-      var results = [];
-
-      state.answers.forEach(function(a) {
-        if (a.isCorrect) {
-          score += 10;
-          results.push({ text: a.correct, isCorrect: true });
-        } else {
-          score -= 5;
-          results.push({ text: 'You chose "' + a.chosen + '" (correct: "' + a.correct + '")', isCorrect: false });
-        }
-      });
-
-      var isPerfect = state.answers.every(function(a) { return a.isCorrect; });
-      if (isPerfect) score += 25;
-
-      return { score: score, results: results, isPerfect: isPerfect };
-    }
-
     // ===== Results Screen =====
     function showResults(allergenCorrect) {
       var recipe = GAME_STATE.currentRecipe;
       var sizeKey = GAME_STATE.size;
-      var isTrainee = GAME_STATE.difficulty === 'trainee';
       var isRetry = GAME_STATE.isRetry;
-      var recipeGrade, hasErrors;
 
-      if (isTrainee) {
-        recipeGrade = gradeTrainee();
-        hasErrors = !recipeGrade.isPerfect;
-      } else {
-        recipeGrade = gradeRecipe(GAME_STATE.blenderContents, recipe, sizeKey);
-        hasErrors = recipeGrade.wrong.length > 0 || recipeGrade.missing.length > 0 || recipeGrade.extra.length > 0;
-      }
+      // All modes now use gradeRecipe with counter blender contents
+      var recipeGrade = gradeRecipe(GAME_STATE.blenderContents, recipe, sizeKey);
+      var hasErrors = recipeGrade.wrong.length > 0 || recipeGrade.missing.length > 0 || recipeGrade.extra.length > 0;
 
       var pointsEarned = isRetry ? 0 : recipeGrade.score + GAME_STATE.allergenScore;
       if (!isRetry) GAME_STATE.score += pointsEarned;
@@ -2460,17 +2345,8 @@
       html += '<p>' + SIZE_LABELS[sizeKey] + '</p>';
       html += '</div>';
 
-      if (isTrainee) {
-        // Show question results
-        html += '<div class="trainee-results-list">';
-        recipeGrade.results.forEach(function(r) {
-          html += '<div class="trainee-result-item ' + (r.isCorrect ? 'result-correct' : 'result-wrong') + '">';
-          html += (r.isCorrect ? '✓ ' : '✗ ') + r.text;
-          html += '</div>';
-        });
-        html += '</div>';
-      } else {
-        // Two-column comparison
+      {
+        // Two-column comparison for all modes
         html += '<div class="results-columns">';
 
         // Your recipe
