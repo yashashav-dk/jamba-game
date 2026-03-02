@@ -53,10 +53,13 @@
       height: 100%;
       padding: 1rem;
       overflow-y: auto;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .screen.active {
       display: flex;
+      opacity: 1;
     }
 
     /* ===== Buttons Base ===== */
@@ -197,6 +200,12 @@
       margin-top: 4px;
     }
 
+    .category-card .card-best {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
     .difficulty-section {
       display: flex;
       gap: 12px;
@@ -226,6 +235,14 @@
     .difficulty-btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
+    }
+
+    .difficulty-btn .diff-best {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #999;
+      margin-top: 2px;
     }
 
     /* ===== Study Screen ===== */
@@ -401,11 +418,20 @@
       height: 100%;
       background: var(--jamba-green);
       border-radius: 5px;
-      transition: width 0.3s linear, background 0.3s;
+      transition: width 1s linear, background 0.3s;
     }
 
     .timer-bar.yellow { background: var(--jamba-yellow); }
     .timer-bar.red { background: #D32F2F; }
+
+    @keyframes timerPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .timer-bar.pulsing {
+      animation: timerPulse 0.5s ease-in-out infinite;
+    }
 
     .game-body {
       display: flex;
@@ -436,6 +462,7 @@
       font-size: 2rem;
       color: #fff;
       flex-shrink: 0;
+      animation: slideIn 0.4s ease-out;
     }
 
     .speech-bubble {
@@ -447,6 +474,7 @@
       text-align: center;
       font-weight: 600;
       max-width: 260px;
+      animation: bubblePop 0.4s ease-out 0.2s both;
     }
 
     .speech-bubble::after {
@@ -574,12 +602,19 @@
       min-height: 44px;
       display: flex;
       align-items: center;
-      transition: all 0.12s;
+      transition: all 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
     }
 
     .ingredient-tile:hover {
       border-color: var(--jamba-orange);
       background: #FFF6F0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .ingredient-tile:active {
+      transform: scale(0.95);
+      box-shadow: none;
     }
 
     /* ===== Ingredient Popup ===== */
@@ -600,6 +635,7 @@
       min-width: 260px;
       text-align: center;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      animation: bubblePop 0.25s ease-out;
     }
 
     .ingredient-popup h3 {
@@ -643,6 +679,13 @@
       display: flex;
       gap: 8px;
       justify-content: center;
+    }
+
+    .crew-auto-label {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--jamba-green);
+      margin-bottom: 16px;
     }
 
     /* ===== Trainee Mode ===== */
@@ -724,6 +767,7 @@
       width: 90%;
       box-shadow: 0 10px 40px rgba(0,0,0,0.25);
       text-align: center;
+      animation: bubblePop 0.3s ease-out;
     }
 
     .modal h3 {
@@ -840,6 +884,24 @@
     #shift-end-screen {
       gap: 16px;
       text-align: center;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .shift-complete-title {
+      font-size: 2.4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--jamba-orange), var(--jamba-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shiftCompleteAnim 0.6s ease-out;
+    }
+
+    @keyframes shiftCompleteAnim {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     .shift-summary {
@@ -847,7 +909,7 @@
       border-radius: 18px;
       padding: 24px;
       box-shadow: 0 3px 14px rgba(0,0,0,0.1);
-      max-width: 400px;
+      max-width: 500px;
       width: 100%;
     }
 
@@ -863,6 +925,92 @@
     .stars {
       font-size: 2rem;
       letter-spacing: 4px;
+    }
+
+    .stars .star {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0);
+    }
+
+    .stars .star.pop {
+      animation: starPop 0.4s ease-out forwards;
+    }
+
+    @keyframes starPop {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .shift-order-row {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .shift-order-pass {
+      color: var(--jamba-green);
+      font-weight: 700;
+    }
+
+    .shift-order-fail {
+      color: #D32F2F;
+      font-weight: 700;
+    }
+
+    /* ===== Toast Notification ===== */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--jamba-green);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      z-index: 500;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+      transition: transform 0.4s ease;
+      text-align: center;
+      max-width: 90%;
+    }
+
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== Animations ===== */
+    @keyframes slideIn {
+      0% { transform: translateX(-60px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes bubblePop {
+      0% { transform: scale(0.7); opacity: 0; }
+      60% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shakerVibrate {
+      0%, 100% { transform: translateX(0) rotate(0); }
+      10% { transform: translateX(-3px) rotate(-3deg); }
+      20% { transform: translateX(3px) rotate(3deg); }
+      30% { transform: translateX(-3px) rotate(-2deg); }
+      40% { transform: translateX(3px) rotate(2deg); }
+      50% { transform: translateX(-2px) rotate(-1deg); }
+      60% { transform: translateX(2px) rotate(1deg); }
+      70% { transform: translateX(-1px) rotate(0); }
+      80% { transform: translateX(1px) rotate(0); }
+    }
+
+    .btn-blend-animate {
+      animation: shakerVibrate 0.5s ease-in-out;
     }
 
     /* ===== Mobile Responsive ===== */
@@ -889,6 +1037,72 @@
       }
       .results-columns {
         flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .game-body {
+        flex-direction: column;
+      }
+      .game-left {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 8px;
+        gap: 8px;
+      }
+      .game-right {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+      }
+      .customer-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+      }
+      .speech-bubble {
+        padding: 10px;
+        font-size: 0.9rem;
+        max-width: 200px;
+      }
+      .reference-panel {
+        font-size: 0.75rem;
+        padding: 8px;
+      }
+      .btn {
+        min-width: 140px;
+        min-height: 44px;
+        padding: 10px 18px;
+        font-size: 0.95rem;
+      }
+      .btn-sm {
+        min-width: 100px;
+        min-height: 44px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+      .ingredient-tile {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        min-height: 44px;
+      }
+      .shift-complete-title {
+        font-size: 1.8rem;
+      }
+      .shift-summary {
+        padding: 16px;
+      }
+      .shift-summary .big-score {
+        font-size: 2.2rem;
+      }
+      .category-card {
+        width: 120px;
+        padding: 12px 8px;
+      }
+      .category-card .card-name {
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -1277,7 +1491,8 @@
       shiftOrders: [],
       traineeState: null,
       isRetry: false,
-      allergenScore: 0
+      allergenScore: 0,
+      isPracticeShift: false
     };
 
     // ===== Screen Navigation =====
@@ -1292,32 +1507,104 @@
       }
     }
 
-    // ===== Progress Persistence =====
-    function loadProgress() {
-      try {
-        var saved = localStorage.getItem('jamba-progress');
-        if (saved) return JSON.parse(saved);
-      } catch(e) {}
+    // ===== Task 9: Progress Persistence =====
+    function defaultProgress() {
       return {
-        categories: {
-          greens: { unlocked: true, bestStars: 0, bestScore: 0 },
-          plant: { unlocked: false, bestStars: 0, bestScore: 0 },
-          whirld: { unlocked: false, bestStars: 0, bestScore: 0 }
-        },
-        difficulties: {
-          trainee: { unlocked: true },
-          crew: { unlocked: false },
-          shiftlead: { unlocked: false }
+        scores: {},
+        unlocks: {
+          categories: ["greens"],
+          tiers: {
+            greens: ["trainee"],
+            plant: ["trainee"],
+            whirld: ["trainee"]
+          }
         },
         totalShifts: 0,
         highScore: 0
       };
     }
 
+    function loadProgress() {
+      try {
+        var saved = localStorage.getItem('jamba-trainer-progress');
+        if (saved) {
+          var parsed = JSON.parse(saved);
+          // Validate structure
+          if (!parsed || !parsed.unlocks || !parsed.unlocks.categories || !parsed.unlocks.tiers || !parsed.scores) {
+            return defaultProgress();
+          }
+          // Ensure all categories have tier arrays
+          var catKeys = Object.keys(RECIPES);
+          catKeys.forEach(function(k) {
+            if (!parsed.unlocks.tiers[k]) {
+              parsed.unlocks.tiers[k] = ["trainee"];
+            }
+          });
+          if (typeof parsed.totalShifts !== 'number') parsed.totalShifts = 0;
+          if (typeof parsed.highScore !== 'number') parsed.highScore = 0;
+          return parsed;
+        }
+      } catch(e) {
+        // Corrupted localStorage, clear and return default
+        try { localStorage.removeItem('jamba-trainer-progress'); } catch(e2) {}
+      }
+      return defaultProgress();
+    }
+
     function saveProgress(progress) {
       try {
-        localStorage.setItem('jamba-progress', JSON.stringify(progress));
+        localStorage.setItem('jamba-trainer-progress', JSON.stringify(progress));
       } catch(e) {}
+    }
+
+    // ===== Toast Notification =====
+    function showToast(message, duration) {
+      duration = duration || 3000;
+      var toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      // Trigger reflow
+      toast.offsetHeight;
+      toast.classList.add('show');
+      setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 400);
+      }, duration);
+    }
+
+    // ===== Update Start Screen High Scores =====
+    function updateStartScreenScores() {
+      var progress = loadProgress();
+      var el = document.getElementById('high-score-summary');
+      if (progress.totalShifts > 0) {
+        var lines = 'Shifts: ' + progress.totalShifts + ' | High Score: ' + progress.highScore;
+        // Show per-category best
+        var catKeys = Object.keys(RECIPES);
+        var details = [];
+        catKeys.forEach(function(catId) {
+          var tierOrder = ['trainee', 'crew', 'shiftlead'];
+          var best = null;
+          tierOrder.forEach(function(tier) {
+            var key = catId + '-' + tier;
+            if (progress.scores[key]) {
+              if (!best || progress.scores[key].score > best.score) {
+                best = progress.scores[key];
+                best.tier = tier;
+              }
+            }
+          });
+          if (best) {
+            details.push(RECIPES[catId].name + ': ' + best.score + 'pts ' + '★'.repeat(best.stars) + '☆'.repeat(3 - best.stars));
+          }
+        });
+        if (details.length > 0) {
+          lines += '\n' + details.join(' | ');
+        }
+        el.textContent = lines;
+      } else {
+        el.textContent = 'No shifts completed yet. Get started!';
+      }
     }
 
     // ===== Task 1: Category Select =====
@@ -1332,18 +1619,31 @@
 
       var html = '';
       CATEGORIES.forEach(function(cat) {
-        var catProgress = progress.categories[cat.id];
-        var unlocked = catProgress ? catProgress.unlocked : cat.unlocked;
+        var unlocked = progress.unlocks.categories.indexOf(cat.id) !== -1;
         var icons = { greens: '🥬', plant: '🌱', whirld: '🌎' };
         var count = RECIPES[cat.id].smoothies.length;
-        var stars = catProgress ? catProgress.bestStars : 0;
+
+        // Find best score/stars for this category
+        var bestStars = 0;
+        var bestScore = 0;
+        var tierOrder = ['trainee', 'crew', 'shiftlead'];
+        tierOrder.forEach(function(tier) {
+          var key = cat.id + '-' + tier;
+          if (progress.scores[key]) {
+            if (progress.scores[key].stars > bestStars) bestStars = progress.scores[key].stars;
+            if (progress.scores[key].score > bestScore) bestScore = progress.scores[key].score;
+          }
+        });
 
         html += '<div class="category-card ' + (unlocked ? '' : 'locked') + '" data-cat="' + cat.id + '" onclick="selectCategory(\'' + cat.id + '\', ' + unlocked + ')">';
         html += '<div class="card-icon">' + (unlocked ? (icons[cat.id] || '🥤') : '🔒') + '</div>';
         html += '<div class="card-name">' + cat.name + '</div>';
         html += '<div class="card-count">' + count + ' recipes</div>';
-        if (stars > 0) {
-          html += '<div style="margin-top:4px;color:#FFD23F;">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
+        if (bestStars > 0) {
+          html += '<div style="margin-top:4px;color:#FFD23F;">' + '★'.repeat(bestStars) + '☆'.repeat(3 - bestStars) + '</div>';
+        }
+        if (bestScore > 0) {
+          html += '<div class="card-best">Best: ' + bestScore + ' pts</div>';
         }
         html += '</div>';
       });
@@ -1362,12 +1662,20 @@
       var diffSection = document.getElementById('difficulty-section');
       diffSection.style.display = 'flex';
 
+      var tierUnlocks = progress.unlocks.tiers[catId] || ["trainee"];
+
       var html = '';
       DIFFICULTIES.forEach(function(diff) {
-        var diffUnlocked = progress.difficulties[diff.id] ? progress.difficulties[diff.id].unlocked : (diff.id === 'trainee');
+        var diffUnlocked = tierUnlocks.indexOf(diff.id) !== -1;
+        var scoreKey = catId + '-' + diff.id;
+        var savedScore = progress.scores[scoreKey];
+
         html += '<button class="difficulty-btn" ' + (diffUnlocked ? '' : 'disabled') + ' onclick="startShift(\'' + catId + '\', \'' + diff.id + '\')">';
         html += (diffUnlocked ? '' : '🔒 ') + diff.name;
         if (diff.timer > 0) html += ' <small>(' + diff.timer + 's)</small>';
+        if (savedScore) {
+          html += '<span class="diff-best">' + '★'.repeat(savedScore.stars) + '☆'.repeat(3 - savedScore.stars) + ' ' + savedScore.score + 'pts</span>';
+        }
         html += '</button>';
       });
       diffSection.innerHTML = html;
@@ -1454,6 +1762,39 @@
       GAME_STATE.shiftResults = [];
       GAME_STATE.shiftOrders = orders;
       GAME_STATE.isRetry = false;
+      GAME_STATE.isPracticeShift = false;
+
+      showScreen('game-screen');
+      showCustomer(0);
+    }
+
+    // ===== Practice Shift (for mistakes) =====
+    function startPracticeShift(missedRecipes) {
+      var orders = [];
+      missedRecipes.forEach(function(missed) {
+        var sm = null;
+        // Find the recipe in RECIPES
+        var smoothies = RECIPES[GAME_STATE.category].smoothies;
+        for (var i = 0; i < smoothies.length; i++) {
+          if (smoothies[i].name === missed.recipe) {
+            sm = smoothies[i];
+            break;
+          }
+        }
+        if (sm) {
+          var sz = SIZES[Math.floor(Math.random() * 3)];
+          orders.push({ recipe: sm, size: sz });
+        }
+      });
+
+      if (orders.length === 0) return;
+
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.score = 0;
+      GAME_STATE.shiftResults = [];
+      GAME_STATE.shiftOrders = orders;
+      GAME_STATE.isRetry = false;
+      GAME_STATE.isPracticeShift = true;
 
       showScreen('game-screen');
       showCustomer(0);
@@ -1473,10 +1814,11 @@
 
       var diff = DIFFICULTIES.find(function(d) { return d.id === GAME_STATE.difficulty; });
       var emoji = CUSTOMER_EMOJIS[index % CUSTOMER_EMOJIS.length];
+      var totalOrders = GAME_STATE.shiftOrders.length;
 
       // Top bar
       var topBar = document.getElementById('game-top-bar');
-      topBar.innerHTML = '<span>Shift ' + (index + 1) + '/10</span>' +
+      topBar.innerHTML = '<span>' + (GAME_STATE.isPracticeShift ? 'Practice ' : 'Shift ') + (index + 1) + '/' + totalOrders + '</span>' +
         '<div class="timer-bar-container"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>' +
         '<span id="score-display">Score: ' + GAME_STATE.score + '</span>';
 
@@ -1496,7 +1838,7 @@
           '</div>';
         renderTraineeMode(order.recipe);
       } else {
-        // Normal mode
+        // Crew and Shift Lead modes - both use ingredient station
         gameBody.innerHTML =
           '<div class="game-left">' +
             '<div class="customer-avatar">' + emoji + '</div>' +
@@ -1509,7 +1851,7 @@
               '<div class="blender-items" id="blender-items"></div>' +
               '<div class="blender-actions">' +
                 '<button class="btn btn-sm btn-dark" onclick="clearBlender()">CLEAR</button>' +
-                '<button class="btn btn-sm btn-orange" onclick="blendRecipe()">BLEND</button>' +
+                '<button class="btn btn-sm btn-orange" id="blend-btn" onclick="handleBlendClick()">BLEND</button>' +
               '</div>' +
             '</div>' +
             '<div class="ingredient-station" id="ingredient-station"></div>' +
@@ -1522,6 +1864,20 @@
           startTimer(diff.timer);
         }
       }
+    }
+
+    function handleBlendClick() {
+      var btn = document.getElementById('blend-btn');
+      if (btn) {
+        btn.classList.add('btn-blend-animate');
+        setTimeout(function() {
+          btn.classList.remove('btn-blend-animate');
+        }, 500);
+      }
+      // Small delay for animation
+      setTimeout(function() {
+        blendRecipe();
+      }, 300);
     }
 
     function buildReferencePanel(recipe, size) {
@@ -1545,7 +1901,19 @@
         if (GAME_STATE.timer <= 0) {
           clearInterval(GAME_STATE.timerInterval);
           GAME_STATE.timerInterval = null;
-          blendRecipe(); // auto-submit
+          // Close any open popups before auto-submitting
+          var popup = document.getElementById('ingredient-popup-overlay');
+          if (popup) popup.remove();
+          // Check if allergen modal is open - if so, auto-submit it
+          var allergenModal = document.getElementById('allergen-modal');
+          if (allergenModal) {
+            allergenModal.remove();
+            // Auto-fail allergen check on timeout
+            GAME_STATE.allergenScore = -10;
+            finishGrading(false);
+          } else {
+            blendRecipe();
+          }
         }
       }, 1000);
     }
@@ -1556,8 +1924,15 @@
       var pct = (current / max) * 100;
       bar.style.width = pct + '%';
       bar.className = 'timer-bar';
-      if (pct < 33) bar.classList.add('red');
-      else if (pct < 66) bar.classList.add('yellow');
+      if (pct < 33) {
+        bar.classList.add('red');
+      } else if (pct < 66) {
+        bar.classList.add('yellow');
+      }
+      // Pulse when under 10 seconds
+      if (current <= 10 && current > 0) {
+        bar.classList.add('pulsing');
+      }
     }
 
     // ===== Ingredient Station =====
@@ -1580,46 +1955,175 @@
       return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
     }
 
+    // ===== Task 6 & 7: Ingredient Popup - mode-aware =====
+    function getRecipeAmountForIngredient(ingredientName) {
+      // Look up the correct amount for this ingredient in the current recipe/size
+      var recipe = GAME_STATE.currentRecipe;
+      var size = GAME_STATE.size;
+      if (!recipe || !size) return null;
+      for (var i = 0; i < recipe.ingredients.length; i++) {
+        if (recipe.ingredients[i].name === ingredientName) {
+          return recipe.ingredients[i][size];
+        }
+      }
+      return null;
+    }
+
+    function isStringValue(val) {
+      return typeof val === 'string' && isNaN(parseFloat(val));
+    }
+
+    function getStepSize(ingredientName) {
+      // Check if any recipe has decimal values for this ingredient
+      var recipe = GAME_STATE.currentRecipe;
+      var size = GAME_STATE.size;
+      if (recipe) {
+        for (var i = 0; i < recipe.ingredients.length; i++) {
+          if (recipe.ingredients[i].name === ingredientName) {
+            var val = recipe.ingredients[i][size];
+            if (typeof val === 'number' && val % 1 !== 0) {
+              return 0.5;
+            }
+            // Check all sizes for this ingredient
+            var vs = recipe.ingredients[i].s;
+            var vm = recipe.ingredients[i].m;
+            var vl = recipe.ingredients[i].l;
+            if ((typeof vs === 'number' && vs % 1 !== 0) ||
+                (typeof vm === 'number' && vm % 1 !== 0) ||
+                (typeof vl === 'number' && vl % 1 !== 0)) {
+              return 0.5;
+            }
+          }
+        }
+      }
+      // Also check globally (e.g., Agave Drizzle always uses 0.5)
+      var allCats = Object.keys(RECIPES);
+      for (var c = 0; c < allCats.length; c++) {
+        var smoothies = RECIPES[allCats[c]].smoothies;
+        for (var s = 0; s < smoothies.length; s++) {
+          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
+            if (smoothies[s].ingredients[ing].name === ingredientName) {
+              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
+              for (var v = 0; v < vals.length; v++) {
+                if (typeof vals[v] === 'number' && vals[v] % 1 !== 0) return 0.5;
+              }
+            }
+          }
+        }
+      }
+      return 1;
+    }
+
     function openIngredientPopup(ingredientName) {
+      var isCrew = GAME_STATE.difficulty === 'crew';
+      var recipeAmount = getRecipeAmountForIngredient(ingredientName);
+      var isStr = recipeAmount !== null && isStringValue(recipeAmount);
+
       // Check if already in blender
       var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === ingredientName; });
-      var startVal = existing ? existing.amount : 1;
 
       var overlay = document.createElement('div');
       overlay.className = 'ingredient-popup-overlay';
       overlay.id = 'ingredient-popup-overlay';
       overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
 
-      overlay.innerHTML =
-        '<div class="ingredient-popup">' +
-          '<h3>' + ingredientName + '</h3>' +
-          '<div class="stepper">' +
-            '<button onclick="stepperChange(-1)">-</button>' +
-            '<span class="stepper-val" id="stepper-val">' + startVal + '</span>' +
-            '<button onclick="stepperChange(1)">+</button>' +
-          '</div>' +
-          '<div class="popup-actions">' +
-            '<button class="btn btn-sm btn-dark" onclick="document.getElementById(\'ingredient-popup-overlay\').remove()">CANCEL</button>' +
-            '<button class="btn btn-sm btn-green" onclick="addIngredient(\'' + escapeQuote(ingredientName) + '\')">ADD</button>' +
-          '</div>' +
-        '</div>';
+      var popupHtml = '<div class="ingredient-popup"><h3>' + ingredientName + '</h3>';
 
+      if (isCrew) {
+        // Crew mode: auto-fill scoops, hide stepper
+        var autoAmount = recipeAmount !== null ? recipeAmount : 1;
+        popupHtml += '<div class="crew-auto-label" id="stepper-val">' + autoAmount + '</div>';
+        popupHtml += '<div style="font-size:0.85rem;color:#888;margin-bottom:12px;">Auto-filled for ' + SIZE_LABELS[GAME_STATE.size] + '</div>';
+        popupHtml += '<div class="popup-actions">';
+        popupHtml += '<button class="btn btn-sm btn-dark" onclick="document.getElementById(\'ingredient-popup-overlay\').remove()">CANCEL</button>';
+        popupHtml += '<button class="btn btn-sm btn-green" onclick="addIngredient(\'' + escapeQuote(ingredientName) + '\')">ADD</button>';
+        popupHtml += '</div>';
+      } else {
+        // Shift Lead mode: full stepper
+        if (isStr) {
+          // String value (like "1x", "1.5x") - show as text, no stepper
+          var startVal = existing ? existing.amount : (recipeAmount || '1x');
+          popupHtml += '<div class="stepper">';
+          popupHtml += '<span class="stepper-val" id="stepper-val" style="font-size:1.6rem;">' + startVal + '</span>';
+          popupHtml += '</div>';
+          popupHtml += '<div style="font-size:0.8rem;color:#888;margin-bottom:12px;">Enter the correct value</div>';
+          // Build option buttons for known string values
+          var stringOptions = getStringOptionsForIngredient(ingredientName);
+          if (stringOptions.length > 0) {
+            popupHtml += '<div style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">';
+            stringOptions.forEach(function(opt) {
+              popupHtml += '<button class="btn btn-sm" style="min-width:60px;background:#eee;color:#333;" onclick="document.getElementById(\'stepper-val\').textContent=\'' + opt + '\'">' + opt + '</button>';
+            });
+            popupHtml += '</div>';
+          }
+        } else {
+          var step = getStepSize(ingredientName);
+          var startVal = existing ? existing.amount : (step === 0.5 ? 0.5 : 1);
+          popupHtml += '<div class="stepper">';
+          popupHtml += '<button onclick="stepperChange(' + (-step) + ')">-</button>';
+          popupHtml += '<span class="stepper-val" id="stepper-val">' + startVal + '</span>';
+          popupHtml += '<button onclick="stepperChange(' + step + ')">+</button>';
+          popupHtml += '</div>';
+        }
+        popupHtml += '<div class="popup-actions">';
+        popupHtml += '<button class="btn btn-sm btn-dark" onclick="document.getElementById(\'ingredient-popup-overlay\').remove()">CANCEL</button>';
+        popupHtml += '<button class="btn btn-sm btn-green" onclick="addIngredient(\'' + escapeQuote(ingredientName) + '\')">ADD</button>';
+        popupHtml += '</div>';
+      }
+
+      popupHtml += '</div>';
+      overlay.innerHTML = popupHtml;
       document.body.appendChild(overlay);
+    }
+
+    function getStringOptionsForIngredient(ingredientName) {
+      // Collect all unique string values for this ingredient across all sizes
+      var options = {};
+      var allCats = Object.keys(RECIPES);
+      for (var c = 0; c < allCats.length; c++) {
+        var smoothies = RECIPES[allCats[c]].smoothies;
+        for (var s = 0; s < smoothies.length; s++) {
+          for (var ing = 0; ing < smoothies[s].ingredients.length; ing++) {
+            if (smoothies[s].ingredients[ing].name === ingredientName) {
+              var vals = [smoothies[s].ingredients[ing].s, smoothies[s].ingredients[ing].m, smoothies[s].ingredients[ing].l];
+              vals.forEach(function(v) {
+                if (typeof v === 'string') options[v] = true;
+              });
+            }
+          }
+        }
+      }
+      return Object.keys(options);
     }
 
     function stepperChange(delta) {
       var el = document.getElementById('stepper-val');
       if (!el) return;
-      var val = parseFloat(el.textContent) + delta;
-      if (val < 0.5) val = 0.5;
+      var currentText = el.textContent;
+      // Don't increment string values
+      if (isNaN(parseFloat(currentText))) return;
+      var val = parseFloat(currentText) + delta;
+      var step = Math.abs(delta);
+      var minVal = step < 1 ? 0.5 : 0.5;
+      if (val < minVal) val = minVal;
       if (val > 20) val = 20;
-      // Support 0.5 increments
+      // Round to avoid floating point issues
+      val = Math.round(val * 10) / 10;
       el.textContent = val;
     }
 
     function addIngredient(name) {
       var el = document.getElementById('stepper-val');
-      var amount = parseFloat(el.textContent);
+      if (!el) return;
+      var rawVal = el.textContent.trim();
+      var amount;
+
+      // Handle string values (like "1x", "1.5x")
+      if (isNaN(parseFloat(rawVal)) || (rawVal.indexOf('x') !== -1)) {
+        amount = rawVal;
+      } else {
+        amount = parseFloat(rawVal);
+      }
 
       // Update or add
       var existing = GAME_STATE.blenderContents.find(function(b) { return b.name === name; });
@@ -1666,6 +2170,9 @@
         clearInterval(GAME_STATE.timerInterval);
         GAME_STATE.timerInterval = null;
       }
+      // Close any open ingredient popup
+      var popup = document.getElementById('ingredient-popup-overlay');
+      if (popup) popup.remove();
       // Show allergen check
       showAllergenCheck();
     }
@@ -1797,10 +2304,24 @@
       var recipe = GAME_STATE.currentRecipe;
       var actual = parseAllergens(recipe.allergens);
 
-      var playerDairy = document.getElementById('allergen-dairy').checked;
-      var playerSoy = document.getElementById('allergen-soy').checked;
-      var playerNut = document.getElementById('allergen-nut').checked;
-      var playerNone = document.getElementById('allergen-none').checked;
+      var dairyEl = document.getElementById('allergen-dairy');
+      var soyEl = document.getElementById('allergen-soy');
+      var nutEl = document.getElementById('allergen-nut');
+      var noneEl = document.getElementById('allergen-none');
+
+      // Guard against missing elements (e.g., modal was removed by timer)
+      if (!dairyEl || !soyEl || !nutEl || !noneEl) {
+        GAME_STATE.allergenScore = -10;
+        var modal = document.getElementById('allergen-modal');
+        if (modal) modal.remove();
+        finishGrading(false);
+        return;
+      }
+
+      var playerDairy = dairyEl.checked;
+      var playerSoy = soyEl.checked;
+      var playerNut = nutEl.checked;
+      var playerNone = noneEl.checked;
 
       var allergenCorrect =
         playerDairy === actual.dairy &&
@@ -1813,6 +2334,10 @@
       var modal = document.getElementById('allergen-modal');
       if (modal) modal.remove();
 
+      finishGrading(allergenCorrect);
+    }
+
+    function finishGrading(allergenCorrect) {
       showResults(allergenCorrect);
     }
 
@@ -1823,6 +2348,7 @@
       var missing = [];
       var extra = [];
       var score = 0;
+      var isCrew = GAME_STATE.difficulty === 'crew';
 
       var recipeMap = {};
       recipe.ingredients.forEach(function(ing) {
@@ -1838,12 +2364,19 @@
       Object.keys(recipeMap).forEach(function(name) {
         var expected = recipeMap[name];
         if (playerMap[name] !== undefined) {
-          if (String(playerMap[name]) === String(expected)) {
+          if (isCrew) {
+            // Crew mode: only check ingredient presence (scoops are auto-correct)
             correct.push({ name: name, expected: expected, got: playerMap[name] });
             score += 10;
           } else {
-            wrong.push({ name: name, expected: expected, got: playerMap[name] });
-            score -= 5;
+            // Shift Lead: check exact amounts
+            if (String(playerMap[name]) === String(expected)) {
+              correct.push({ name: name, expected: expected, got: playerMap[name] });
+              score += 10;
+            } else {
+              wrong.push({ name: name, expected: expected, got: playerMap[name] });
+              score -= 5;
+            }
           }
         } else {
           missing.push({ name: name, expected: expected });
@@ -1978,10 +2511,12 @@
       }
 
       // Buttons
+      var totalOrders = GAME_STATE.shiftOrders.length;
       if (hasErrors && !isRetry) {
         html += '<button class="btn btn-orange" onclick="forceRetry()" style="margin-top:12px;">RETRY</button>';
       } else {
-        html += '<button class="btn btn-green" onclick="nextCustomer()" style="margin-top:12px;">NEXT CUSTOMER</button>';
+        var isLastCustomer = GAME_STATE.customerIndex >= totalOrders - 1;
+        html += '<button class="btn btn-green" onclick="nextCustomer()" style="margin-top:12px;">' + (isLastCustomer ? 'FINISH SHIFT' : 'NEXT CUSTOMER') + '</button>';
       }
 
       content.innerHTML = html;
@@ -1999,7 +2534,8 @@
     function nextCustomer() {
       GAME_STATE.isRetry = false;
       var next = GAME_STATE.customerIndex + 1;
-      if (next >= 10) {
+      var totalOrders = GAME_STATE.shiftOrders.length;
+      if (next >= totalOrders) {
         showShiftEnd();
       } else {
         showScreen('game-screen');
@@ -2007,68 +2543,167 @@
       }
     }
 
-    // ===== Shift End Screen =====
+    // ===== Task 8: End-of-Shift Scorecard =====
+    function calculateMaxPossibleScore(numOrders) {
+      // Each order max: all ingredients correct (10 per ingredient) + perfect bonus (25) + allergen correct (10)
+      // We'll estimate based on average ~6 ingredients per smoothie
+      // But a simpler approach: each order can score max = (numIngredients * 10) + 25 + 10
+      // Since we don't know the exact recipes, we'll calculate from actual results
+      // Better approach: max per order is fixed at what a perfect run would give
+      // For simplicity, use the actual recipe data from the shift
+      var maxScore = 0;
+      GAME_STATE.shiftOrders.forEach(function(order) {
+        var numIng = order.recipe.ingredients.length;
+        maxScore += (numIng * 10) + 25 + 10; // perfect ingredients + perfect bonus + allergen
+      });
+      return maxScore;
+    }
+
     function showShiftEnd() {
       var totalScore = GAME_STATE.score;
+      var totalOrders = GAME_STATE.shiftOrders.length;
       var perfects = GAME_STATE.shiftResults.filter(function(r) { return r.isPerfect; }).length;
-      var stars = totalScore >= 200 ? 3 : totalScore >= 100 ? 2 : totalScore > 0 ? 1 : 0;
+      var maxScore = calculateMaxPossibleScore(totalOrders);
+
+      // Star calculation based on percentage of max
+      var pct = maxScore > 0 ? (totalScore / maxScore) : 0;
+      var stars;
+      if (pct >= 0.9) stars = 3;
+      else if (pct >= 0.7) stars = 2;
+      else if (pct >= 0.4) stars = 1;
+      else stars = 0;
+
+      // Find missed recipes
+      var missedRecipes = GAME_STATE.shiftResults.filter(function(r) { return !r.isPerfect; });
 
       var content = document.getElementById('shift-end-content');
-      var html = '<h2>SHIFT COMPLETE!</h2>';
+      var html = '<h1 class="shift-complete-title">SHIFT COMPLETE!</h1>';
       html += '<div class="shift-summary">';
       html += '<div class="big-score">' + totalScore + '</div>';
       html += '<p>Points Earned</p>';
-      html += '<div class="stars">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</div>';
-      html += '<p style="margin-top:12px;">' + perfects + '/10 Perfect Orders</p>';
 
-      // Per-customer breakdown
+      // Stars with animation
+      html += '<div class="stars" id="shift-stars">';
+      for (var i = 0; i < 3; i++) {
+        if (i < stars) {
+          html += '<span class="star" id="star-' + i + '">★</span>';
+        } else {
+          html += '<span class="star" id="star-' + i + '" style="color:#ddd;">☆</span>';
+        }
+      }
+      html += '</div>';
+
+      html += '<p style="margin-top:12px;">' + perfects + '/' + totalOrders + ' Perfect Orders</p>';
+
+      // Per-smoothie breakdown
       html += '<div style="margin-top:16px;text-align:left;">';
+      html += '<h4 style="margin-bottom:8px;">Order Breakdown</h4>';
       GAME_STATE.shiftResults.forEach(function(r, i) {
-        html += '<div style="padding:4px 0;font-size:0.85rem;border-bottom:1px solid #eee;">';
-        html += '<span>' + (i + 1) + '. ' + r.recipe + ' (' + SIZE_LABELS[r.size] + ')</span> ';
-        html += '<span style="float:right;font-weight:700;color:' + (r.score >= 0 ? 'var(--jamba-green)' : '#D32F2F') + ';">' + (r.score >= 0 ? '+' : '') + r.score + '</span>';
+        var isPassed = r.isPerfect;
+        html += '<div class="shift-order-row">';
+        html += '<span>' + (i + 1) + '. ' + r.recipe + ' (' + SIZE_LABELS[r.size] + ')</span>';
+        html += '<span>';
+        html += '<span class="' + (isPassed ? 'shift-order-pass' : 'shift-order-fail') + '">' + (isPassed ? 'PASS' : 'FAIL') + '</span>';
+        html += ' <span style="font-weight:700;color:' + (r.score >= 0 ? 'var(--jamba-green)' : '#D32F2F') + ';">' + (r.score >= 0 ? '+' : '') + r.score + '</span>';
+        html += '</span>';
         html += '</div>';
       });
       html += '</div></div>';
 
+      // Buttons
       html += '<div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center;">';
-      html += '<button class="btn btn-green" onclick="showScreen(\'start-screen\');">HOME</button>';
+      if (missedRecipes.length > 0) {
+        html += '<button class="btn btn-purple" onclick="startPracticeMistakes()">PRACTICE MISTAKES</button>';
+      }
       html += '<button class="btn btn-orange" onclick="showScreen(\'category-select-screen\'); renderCategorySelect();">NEW SHIFT</button>';
+      html += '<button class="btn btn-dark" onclick="showScreen(\'start-screen\'); updateStartScreenScores();">HOME</button>';
       html += '</div>';
 
       content.innerHTML = html;
 
-      // Save progress
+      // Animate stars one at a time
+      setTimeout(function() {
+        for (var s = 0; s < 3; s++) {
+          (function(idx) {
+            setTimeout(function() {
+              var starEl = document.getElementById('star-' + idx);
+              if (starEl) starEl.classList.add('pop');
+            }, idx * 300);
+          })(s);
+        }
+      }, 200);
+
+      // Save progress (Task 9)
+      if (!GAME_STATE.isPracticeShift) {
+        saveShiftProgress(totalScore, stars);
+      }
+
+      showScreen('shift-end-screen');
+    }
+
+    function startPracticeMistakes() {
+      var missedRecipes = GAME_STATE.shiftResults.filter(function(r) { return !r.isPerfect; });
+      startPracticeShift(missedRecipes);
+    }
+
+    // ===== Task 9: Save Progress & Unlock Logic =====
+    function saveShiftProgress(totalScore, stars) {
       var progress = loadProgress();
       progress.totalShifts++;
       if (totalScore > progress.highScore) progress.highScore = totalScore;
-      var catProg = progress.categories[GAME_STATE.category];
-      if (catProg) {
-        if (stars > catProg.bestStars) catProg.bestStars = stars;
-        if (totalScore > catProg.bestScore) catProg.bestScore = totalScore;
+
+      // Save score for this category + difficulty combo
+      var scoreKey = GAME_STATE.category + '-' + GAME_STATE.difficulty;
+      var existing = progress.scores[scoreKey];
+      if (!existing || totalScore > existing.score) {
+        progress.scores[scoreKey] = { score: totalScore, stars: stars };
+      } else if (stars > existing.stars) {
+        progress.scores[scoreKey].stars = stars;
       }
-      // Unlock next category if 2+ stars
+
+      var unlockMessages = [];
+
+      // Unlock next difficulty tier if 2+ stars
       if (stars >= 2) {
+        var tierOrder = ['trainee', 'crew', 'shiftlead'];
+        var currentTierIdx = tierOrder.indexOf(GAME_STATE.difficulty);
+        if (currentTierIdx < tierOrder.length - 1) {
+          var nextTier = tierOrder[currentTierIdx + 1];
+          var catTiers = progress.unlocks.tiers[GAME_STATE.category];
+          if (catTiers.indexOf(nextTier) === -1) {
+            catTiers.push(nextTier);
+            var tierNames = { crew: 'Crew', shiftlead: 'Shift Lead' };
+            unlockMessages.push('Unlocked ' + tierNames[nextTier] + ' mode for ' + RECIPES[GAME_STATE.category].name + '!');
+          }
+        }
+
+        // Unlock next category
         var catKeys = Object.keys(RECIPES);
         var curIdx = catKeys.indexOf(GAME_STATE.category);
         if (curIdx < catKeys.length - 1) {
           var nextCat = catKeys[curIdx + 1];
-          if (progress.categories[nextCat]) progress.categories[nextCat].unlocked = true;
+          if (progress.unlocks.categories.indexOf(nextCat) === -1) {
+            progress.unlocks.categories.push(nextCat);
+            unlockMessages.push('Unlocked ' + RECIPES[nextCat].name + ' category!');
+          }
         }
-        // Unlock crew difficulty
-        progress.difficulties.crew = { unlocked: true };
       }
-      if (stars >= 3) {
-        progress.difficulties.shiftlead = { unlocked: true };
-      }
+
       saveProgress(progress);
 
-      // Update high score summary on start screen
-      document.getElementById('high-score-summary').textContent =
-        'Shifts: ' + progress.totalShifts + ' | High Score: ' + progress.highScore;
+      // Show unlock toasts
+      unlockMessages.forEach(function(msg, i) {
+        setTimeout(function() {
+          showToast(msg, 3500);
+        }, (i + 1) * 1000);
+      });
 
-      showScreen('shift-end-screen');
+      // Update start screen
+      updateStartScreenScores();
     }
+
+    // ===== Init =====
+    updateStartScreenScores();
   </script>
 </body>
 </html>
