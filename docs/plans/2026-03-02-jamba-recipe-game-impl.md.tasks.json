@@ -1,0 +1,18 @@
+{
+  "planPath": "docs/plans/2026-03-02-jamba-recipe-game-impl.md",
+  "tasks": [
+    {"id": 0, "nativeId": "7", "subject": "Task 0: HTML Skeleton + Recipe Data + Screen Navigation", "status": "pending"},
+    {"id": 1, "nativeId": "8", "subject": "Task 1: Start Screen UI", "status": "pending", "blockedBy": [0]},
+    {"id": 2, "nativeId": "9", "subject": "Task 2: Study Mode", "status": "pending", "blockedBy": [0]},
+    {"id": 3, "nativeId": "10", "subject": "Task 3: Game Engine Core", "status": "pending", "blockedBy": [0]},
+    {"id": 4, "nativeId": "11", "subject": "Task 4: Trainee Mode (Multiple Choice)", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "nativeId": "12", "subject": "Task 5: Recipe Grading + Results + Allergen Check + Forced Retry", "status": "pending", "blockedBy": [3, 4]},
+    {"id": 6, "nativeId": "13", "subject": "Task 6: Crew Mode", "status": "pending", "blockedBy": [3, 5]},
+    {"id": 7, "nativeId": "14", "subject": "Task 7: Shift Lead Mode (Full Simulation)", "status": "pending", "blockedBy": [3, 5]},
+    {"id": 8, "nativeId": "15", "subject": "Task 8: End-of-Shift Scorecard", "status": "pending", "blockedBy": [5]},
+    {"id": 9, "nativeId": "16", "subject": "Task 9: Progressive Unlock + localStorage", "status": "pending", "blockedBy": [8]},
+    {"id": 10, "nativeId": "17", "subject": "Task 10: Visual Polish + Animations", "status": "pending", "blockedBy": [9]},
+    {"id": 11, "nativeId": "18", "subject": "Task 11: Final Verification + Edge Cases", "status": "pending", "blockedBy": [10]}
+  ],
+  "lastUpdated": "2026-03-02T00:30:00Z"
+}
