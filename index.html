@@ -1058,8 +1058,9 @@
     <h1 class="game-title">JAMBA SHIFT TRAINER</h1>
     <p class="game-subtitle">Master your recipes before your next shift</p>
     <div class="start-buttons">
-      <button class="btn btn-green" onclick="showScreen('study-screen'); renderStudyMode();">STUDY RECIPES</button>
-      <button class="btn btn-orange" onclick="showScreen('category-select-screen'); renderCategorySelect();">START SHIFT</button>
+      <button class="btn btn-green" onclick="showScreen('category-select-screen'); renderCategorySelect('practice');">PRACTICE</button>
+      <button class="btn btn-orange" onclick="showScreen('category-select-screen'); renderCategorySelect('shift');">START SHIFT</button>
+      <button class="btn" onclick="showScreen('study-screen'); renderStudyMode();" style="background:#8D6E63;color:#fff;">RECIPE BOOK</button>
     </div>
     <div class="high-score-summary" id="high-score-summary">No shifts completed yet. Get started!</div>
   </div>
@@ -1554,8 +1555,12 @@
 
     // ===== Task 1: Category Select =====
     var selectedCategory = null;
+    var selectedMode = 'shift';
 
-    function renderCategorySelect() {
+    function renderCategorySelect(mode) {
+      selectedMode = mode || 'shift';
+      var headerEl = document.querySelector('#category-select-screen h2');
+      if (headerEl) headerEl.textContent = selectedMode === 'practice' ? 'CHOOSE A MENU TO PRACTICE' : 'CHOOSE YOUR STATION';
       var progress = loadProgress();
       var container = document.getElementById('category-cards');
       var diffSection = document.getElementById('difficulty-section');
@@ -1602,6 +1607,11 @@
       document.querySelectorAll('.category-card').forEach(function(el) {
         el.classList.toggle('selected', el.dataset.cat === catId);
       });
+
+      if (selectedMode === 'practice') {
+        startPractice(catId);
+        return;
+      }
 
       var progress = loadProgress();
       var diffSection = document.getElementById('difficulty-section');
@@ -1753,6 +1763,51 @@
       }
     }
 
+    // ===== Practice Mode =====
+    function startPractice(categoryId) {
+      var smoothies = RECIPES[categoryId].smoothies;
+      var sm = smoothies[Math.floor(Math.random() * smoothies.length)];
+      var sz = SIZES[Math.floor(Math.random() * 3)];
+
+      GAME_STATE.category = categoryId;
+      GAME_STATE.difficulty = 'practice';
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.score = 0;
+      GAME_STATE.shiftResults = [];
+      GAME_STATE.shiftOrders = [{ recipe: sm, size: sz }];
+      GAME_STATE.isRetry = false;
+      GAME_STATE.isPracticeShift = true;
+      GAME_STATE.timer = 0;
+      GAME_STATE.shiftTimerMax = 0;
+      GAME_STATE.overtimePenalty = 0;
+
+      if (GAME_STATE.timerInterval) {
+        clearInterval(GAME_STATE.timerInterval);
+        GAME_STATE.timerInterval = null;
+      }
+
+      showScreen('game-screen');
+      showCustomer(0);
+    }
+
+    function practiceTryAgain() {
+      GAME_STATE.isRetry = true;
+      showScreen('game-screen');
+      showCustomer(0);
+    }
+
+    function practiceNextSmoothie() {
+      var smoothies = RECIPES[GAME_STATE.category].smoothies;
+      var sm = smoothies[Math.floor(Math.random() * smoothies.length)];
+      var sz = SIZES[Math.floor(Math.random() * 3)];
+      GAME_STATE.shiftOrders = [{ recipe: sm, size: sz }];
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.isRetry = false;
+      GAME_STATE.blenderContents = [];
+      showScreen('game-screen');
+      showCustomer(0);
+    }
+
     // ===== Practice Shift (for mistakes) =====
     function startPracticeShift(missedRecipes) {
       var orders = [];
@@ -1843,7 +1898,9 @@
       } else {
         html += '<div style="flex:1;"></div>';
       }
-      html += '<span id="score-display">Score: ' + GAME_STATE.score + '</span>';
+      if (!GAME_STATE.isPracticeShift) {
+        html += '<span id="score-display">Score: ' + GAME_STATE.score + '</span>';
+      }
       html += '</div>';
 
       // Order ticket
@@ -2117,6 +2174,11 @@
     }
 
     function blendRecipe() {
+      if (GAME_STATE.isPracticeShift) {
+        GAME_STATE.allergenScore = 0;
+        showResults(true);
+        return;
+      }
       showAllergenCheck();
     }
 
@@ -2351,20 +2413,26 @@
         html += '</div>';
       }
 
-      // Allergen result
-      html += '<div class="results-allergen" style="background:' + (allergenCorrect ? '#C8E6C9' : '#FFCDD2') + ';">';
-      html += 'Allergen Check: ' + (allergenCorrect ? '✓ Correct (+10)' : '✗ Wrong (-10)') + '</div>';
+      if (!GAME_STATE.isPracticeShift) {
+        // Allergen result
+        html += '<div class="results-allergen" style="background:' + (allergenCorrect ? '#C8E6C9' : '#FFCDD2') + ';">';
+        html += 'Allergen Check: ' + (allergenCorrect ? '✓ Correct (+10)' : '✗ Wrong (-10)') + '</div>';
 
-      // Points
-      if (!isRetry) {
-        html += '<div class="results-score">' + (pointsEarned >= 0 ? '+' : '') + pointsEarned + ' pts</div>';
-      } else {
-        html += '<div style="color:#888;font-weight:600;">Retry - no points</div>';
+        // Points
+        if (!isRetry) {
+          html += '<div class="results-score">' + (pointsEarned >= 0 ? '+' : '') + pointsEarned + ' pts</div>';
+        } else {
+          html += '<div style="color:#888;font-weight:600;">Retry - no points</div>';
+        }
       }
 
       // Buttons
       var totalOrders = GAME_STATE.shiftOrders.length;
-      if (hasErrors && !isRetry) {
+      if (GAME_STATE.isPracticeShift) {
+        html += '<button class="btn btn-orange" onclick="practiceTryAgain()" style="margin-top:12px;">TRY AGAIN</button>';
+        html += '<button class="btn btn-green" onclick="practiceNextSmoothie()" style="margin-top:8px;">NEXT SMOOTHIE</button>';
+        html += '<button class="btn" onclick="showScreen(\'start-screen\');" style="margin-top:8px;background:#888;color:#fff;">HOME</button>';
+      } else if (hasErrors && !isRetry) {
         html += '<button class="btn btn-orange" onclick="forceRetry()" style="margin-top:12px;">RETRY</button>';
       } else {
         var isLastCustomer = GAME_STATE.customerIndex >= totalOrders - 1;
