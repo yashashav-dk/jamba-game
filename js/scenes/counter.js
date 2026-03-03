@@ -103,41 +103,37 @@ class CounterScene extends Phaser.Scene {
   _drawCounterZones() {
     var self = this;
     var baseY = 245;
+    var rowH = 42; // tighter spacing to prevent overflow
 
-    // LEFT COLUMN: Juices, PB, Dairy
+    // LEFT COLUMN: Juices (3 cols), PB, Dairy
     var leftX = 10;
 
-    // Juices
-    this.add.text(leftX + 50, baseY - 12, 'Juices', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
+    // Juices - 3 columns to reduce rows
+    this.add.text(leftX + 85, baseY - 12, 'Juices', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
     COUNTER_ZONES.juices.forEach(function(name, i) {
-      var col = i % 2;
-      var row = Math.floor(i / 2);
-      self._makeTile(leftX + col * 62, baseY + row * 46, name, 'juices');
+      var col = i % 3;
+      var row = Math.floor(i / 3);
+      self._makeTile(leftX + col * 60, baseY + row * rowH, name, 'juices');
     });
 
-    // PB
-    var pbY = baseY + Math.ceil(COUNTER_ZONES.juices.length / 2) * 46 + 10;
-    this.add.text(leftX + 50, pbY - 12, 'PB', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
-    COUNTER_ZONES.pb.forEach(function(name, i) {
-      self._makeTile(leftX, pbY + i * 46, name, 'pb');
-    });
-
-    // Dairy
-    var dairyY = pbY + COUNTER_ZONES.pb.length * 46 + 10;
-    this.add.text(leftX + 50, dairyY - 12, 'Dairy', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
-    COUNTER_ZONES.dairy.forEach(function(name, i) {
-      var col = i % 2;
-      var row = Math.floor(i / 2);
-      self._makeTile(leftX + col * 62, dairyY + row * 46, name, 'dairy');
+    // PB + Dairy combined
+    var pbDairyY = baseY + Math.ceil(COUNTER_ZONES.juices.length / 3) * rowH + 10;
+    this.add.text(leftX + 85, pbDairyY - 12, 'PB & Dairy', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
+    var pbDairyItems = COUNTER_ZONES.pb.concat(COUNTER_ZONES.dairy);
+    pbDairyItems.forEach(function(name, i) {
+      var col = i % 3;
+      var row = Math.floor(i / 3);
+      var zone = COUNTER_ZONES.pb.indexOf(name) !== -1 ? 'pb' : 'dairy';
+      self._makeTile(leftX + col * 60, pbDairyY + row * rowH, name, zone);
     });
 
     // CENTER-LEFT: IQF
     var iqfX = 200;
-    this.add.text(iqfX + 100, baseY - 12, 'IQF Fruits', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
+    this.add.text(iqfX + 90, baseY - 12, 'IQF Fruits', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
     COUNTER_ZONES.iqf.forEach(function(name, i) {
       var col = i % 3;
       var row = Math.floor(i / 3);
-      self._makeTile(iqfX + col * 62, baseY + row * 46, name, 'iqf');
+      self._makeTile(iqfX + col * 62, baseY + row * rowH, name, 'iqf');
     });
 
     // CENTER-RIGHT: Hardpacks
@@ -146,14 +142,14 @@ class CounterScene extends Phaser.Scene {
     COUNTER_ZONES.hardpacks.forEach(function(name, i) {
       var col = i % 3;
       var row = Math.floor(i / 3);
-      self._makeTile(hpX + col * 62, baseY + row * 46, name, 'hardpacks');
+      self._makeTile(hpX + col * 62, baseY + row * rowH, name, 'hardpacks');
     });
 
     // RIGHT: Ice
     var iceX = 700;
     this.add.text(iceX + 28, baseY - 12, 'Ice', { fontSize: '9px', fontFamily: 'monospace', fill: '#CCC' }).setOrigin(0.5);
     COUNTER_ZONES.ice.forEach(function(name, i) {
-      self._makeTile(iceX, baseY + i * 46, name, 'ice');
+      self._makeTile(iceX, baseY + i * rowH, name, 'ice');
     });
   }
 
@@ -221,9 +217,9 @@ class CounterScene extends Phaser.Scene {
     var self = this;
     var btnX = this.blenderX + 10;
 
-    this._makeBlenderButton(btnX, 310, 'btn-blend', function() { self._blend(); });
-    this._makeBlenderButton(btnX, 342, 'btn-clear', function() { self._clear(); });
-    this._makeBlenderButton(btnX, 374, 'btn-undo', function() { self._undo(); });
+    this._makeBlenderButton(btnX, 310, 'btn-blend', 'BLEND', function() { self._blend(); });
+    this._makeBlenderButton(btnX, 342, 'btn-clear', 'CLEAR', function() { self._clear(); });
+    this._makeBlenderButton(btnX, 374, 'btn-undo', 'UNDO', function() { self._undo(); });
 
     // Ingredient list area
     this.blenderListText = this.add.text(this.blenderX, 410, '', {
@@ -231,8 +227,11 @@ class CounterScene extends Phaser.Scene {
     });
   }
 
-  _makeBlenderButton(x, y, texture, callback) {
+  _makeBlenderButton(x, y, texture, label, callback) {
     var btn = this.add.image(x, y, texture).setOrigin(0).setInteractive({ useHandCursor: true });
+    this.add.text(x + 36, y + 14, label, {
+      fontSize: '10px', fontFamily: 'monospace', fill: '#FFF', fontStyle: 'bold'
+    }).setOrigin(0.5);
     btn.on('pointerdown', function() {
       SFX.scoop();
       callback();
@@ -316,7 +315,7 @@ class CounterScene extends Phaser.Scene {
   }
 
   _drawCustomer(order) {
-    this.customer = this.add.image(GAME_WIDTH + 50, 500, 'customer').setOrigin(0.5, 1);
+    this.customer = this.add.image(GAME_WIDTH + 50, 560, 'customer').setOrigin(0.5, 1);
     this.tweens.add({
       targets: this.customer,
       x: 500,
@@ -325,7 +324,7 @@ class CounterScene extends Phaser.Scene {
       onComplete: function() {
         this.tweens.add({
           targets: this.customer,
-          y: { from: 500, to: 496 },
+          y: { from: 560, to: 556 },
           duration: 800,
           yoyo: true,
           repeat: -1,
@@ -335,8 +334,10 @@ class CounterScene extends Phaser.Scene {
     });
 
     this.time.delayedCall(900, function() {
-      this.speechBubble = this.add.image(500, 420, 'speech-bubble').setOrigin(0.5, 1).setAlpha(0);
-      this.speechText = this.add.text(500, 400, SIZE_LABELS[order.size] + '\n' + order.recipe.name, {
+      var bubbleY = 470;
+      this.speechBubble = this.add.image(500, bubbleY, 'speech-bubble').setOrigin(0.5, 1).setAlpha(0);
+      // Center text in bubble body (bubble is 72px: 60px body + 12px tail triangle)
+      this.speechText = this.add.text(500, bubbleY - 42, SIZE_LABELS[order.size] + '\n' + order.recipe.name, {
         fontSize: '11px', fontFamily: 'monospace', fill: '#333', align: 'center',
         wordWrap: { width: 180 }
       }).setOrigin(0.5).setAlpha(0);
