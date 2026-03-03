@@ -1435,7 +1435,9 @@
       traineeState: null,
       isRetry: false,
       allergenScore: 0,
-      isPracticeShift: false
+      isPracticeShift: false,
+      shiftTimerMax: 0,
+      overtimePenalty: 0
     };
 
     // ===== Screen Navigation =====
@@ -1740,6 +1742,15 @@
 
       showScreen('game-screen');
       showCustomer(0);
+
+      // Start shift-wide timer
+      var diff = DIFFICULTIES.find(function(d) { return d.id === difficultyId; });
+      if (diff && diff.timer > 0) {
+        GAME_STATE.shiftTimerMax = diff.timer;
+        GAME_STATE.timer = diff.timer;
+        GAME_STATE.overtimePenalty = 0;
+        startShiftTimer();
+      }
     }
 
     // ===== Practice Shift (for mistakes) =====
@@ -1810,11 +1821,6 @@
     }
 
     function showCustomer(index) {
-      if (GAME_STATE.timerInterval) {
-        clearInterval(GAME_STATE.timerInterval);
-        GAME_STATE.timerInterval = null;
-      }
-
       var order = GAME_STATE.shiftOrders[index];
       GAME_STATE.currentRecipe = order.recipe;
       GAME_STATE.size = order.size;
@@ -1822,9 +1828,7 @@
       GAME_STATE.customerIndex = index;
       scoopHistory = [];
 
-      var diff = DIFFICULTIES.find(function(d) { return d.id === GAME_STATE.difficulty; });
       var totalOrders = GAME_STATE.shiftOrders.length;
-
 
       var wrap = document.getElementById('counter-wrap');
       var html = '';
@@ -1832,8 +1836,10 @@
       // Top bar
       html += '<div class="counter-top-bar">';
       html += '<span>' + (GAME_STATE.isPracticeShift ? 'Practice ' : 'Order ') + (index + 1) + '/' + totalOrders + '</span>';
-      if (diff.timer > 0) {
-        html += '<div class="timer-bar-container"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>';
+      var diff = DIFFICULTIES.find(function(d) { return d.id === GAME_STATE.difficulty; });
+      if (diff && diff.timer > 0) {
+        html += '<div class="timer-bar-container"><div class="timer-bar" id="timer-bar"></div></div>';
+        html += '<span id="timer-text" style="min-width:50px;text-align:center;font-weight:700;font-family:monospace;"></span>';
       } else {
         html += '<div style="flex:1;"></div>';
       }
@@ -1884,9 +1890,9 @@
 
       wrap.innerHTML = html;
 
-      // Start timer if applicable
-      if (diff.timer > 0) {
-        startTimer(diff.timer);
+      // Sync shift timer display after DOM rebuild
+      if (GAME_STATE.timerInterval) {
+        updateShiftTimerDisplay();
       }
     }
 
@@ -2111,50 +2117,50 @@
     }
 
     function blendRecipe() {
-      if (GAME_STATE.timerInterval) {
-        clearInterval(GAME_STATE.timerInterval);
-        GAME_STATE.timerInterval = null;
-      }
       showAllergenCheck();
     }
 
-    // ===== Timer =====
-    function startTimer(seconds) {
-      GAME_STATE.timer = seconds;
-      var maxTime = seconds;
-      updateTimerBar(maxTime, maxTime);
-
+    // ===== Shift-Wide Timer =====
+    function startShiftTimer() {
+      if (GAME_STATE.timerInterval) {
+        clearInterval(GAME_STATE.timerInterval);
+      }
+      updateShiftTimerDisplay();
       GAME_STATE.timerInterval = setInterval(function() {
         GAME_STATE.timer--;
-        updateTimerBar(GAME_STATE.timer, maxTime);
-        if (GAME_STATE.timer <= 0) {
-          clearInterval(GAME_STATE.timerInterval);
-          GAME_STATE.timerInterval = null;
-          var allergenModal = document.getElementById('allergen-modal');
-          if (allergenModal) {
-            allergenModal.remove();
-            GAME_STATE.allergenScore = -10;
-            finishGrading(false);
-          } else {
-            blendRecipe();
-          }
+        updateShiftTimerDisplay();
+        if (GAME_STATE.timer < 0) {
+          GAME_STATE.overtimePenalty = Math.abs(GAME_STATE.timer) * 5;
         }
       }, 1000);
     }
 
-    function updateTimerBar(current, max) {
+    function updateShiftTimerDisplay() {
       var bar = document.getElementById('timer-bar');
+      var timeText = document.getElementById('timer-text');
       if (!bar) return;
-      var pct = (current / max) * 100;
+      var max = GAME_STATE.shiftTimerMax;
+      var current = Math.max(0, GAME_STATE.timer);
+      var pct = max > 0 ? (current / max) * 100 : 0;
       bar.style.width = pct + '%';
       bar.className = 'timer-bar';
-      if (pct < 33) {
+      if (pct < 20) {
         bar.classList.add('red');
-      } else if (pct < 66) {
+      } else if (pct < 40) {
         bar.classList.add('yellow');
       }
-      if (current <= 10 && current > 0) {
+      if (current <= 30 && current > 0) {
         bar.classList.add('pulsing');
+      }
+      var displayTime = GAME_STATE.timer;
+      var isOvertime = displayTime < 0;
+      var absTime = Math.abs(displayTime);
+      var mins = Math.floor(absTime / 60);
+      var secs = absTime % 60;
+      var formatted = (isOvertime ? '-' : '') + mins + ':' + String(secs).padStart(2, '0');
+      if (timeText) {
+        timeText.textContent = formatted;
+        timeText.style.color = isOvertime ? '#D32F2F' : '';
       }
     }
 
@@ -2406,7 +2412,14 @@
     }
 
     function showShiftEnd() {
+      if (GAME_STATE.timerInterval) {
+        clearInterval(GAME_STATE.timerInterval);
+        GAME_STATE.timerInterval = null;
+      }
+
       var totalScore = GAME_STATE.score;
+      var overtimePenalty = GAME_STATE.overtimePenalty || 0;
+      totalScore -= overtimePenalty;
       var totalOrders = GAME_STATE.shiftOrders.length;
       var perfects = GAME_STATE.shiftResults.filter(function(r) { return r.isPerfect; }).length;
       var maxScore = calculateMaxPossibleScore(totalOrders);
@@ -2427,6 +2440,9 @@
       html += '<div class="shift-summary">';
       html += '<div class="big-score">' + totalScore + '</div>';
       html += '<p>Points Earned</p>';
+      if (overtimePenalty > 0) {
+        html += '<p style="color:#D32F2F;">Overtime Penalty: -' + overtimePenalty + '</p>';
+      }
 
       // Stars with animation
       html += '<div class="stars" id="shift-stars">';
