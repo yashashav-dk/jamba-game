@@ -1412,9 +1412,9 @@
 
     // ===== DIFFICULTIES =====
     const DIFFICULTIES = [
-      { id: "trainee", name: "Trainee", timer: 0 },
-      { id: "crew", name: "Crew", timer: 45 },
-      { id: "shiftlead", name: "Shift Lead", timer: 35 }
+      { id: "easy", name: "Easy", timer: 300 },
+      { id: "medium", name: "Medium", timer: 240 },
+      { id: "hard", name: "Hard", timer: 180 }
     ];
 
     // ===== GAME_STATE =====
@@ -1455,11 +1455,11 @@
       return {
         scores: {},
         unlocks: {
-          categories: ["greens"],
+          categories: ["greens", "plant", "whirld"],
           tiers: {
-            greens: ["trainee"],
-            plant: ["trainee"],
-            whirld: ["trainee"]
+            greens: ["easy", "medium", "hard"],
+            plant: ["easy", "medium", "hard"],
+            whirld: ["easy", "medium", "hard"]
           }
         },
         totalShifts: 0,
@@ -1480,7 +1480,7 @@
           var catKeys = Object.keys(RECIPES);
           catKeys.forEach(function(k) {
             if (!parsed.unlocks.tiers[k]) {
-              parsed.unlocks.tiers[k] = ["trainee"];
+              parsed.unlocks.tiers[k] = ["easy"];
             }
           });
           if (typeof parsed.totalShifts !== 'number') parsed.totalShifts = 0;
@@ -1562,14 +1562,14 @@
 
       var html = '';
       CATEGORIES.forEach(function(cat) {
-        var unlocked = progress.unlocks.categories.indexOf(cat.id) !== -1;
+        var unlocked = true;
         var icons = { greens: '🥬', plant: '🌱', whirld: '🌎' };
         var count = RECIPES[cat.id].smoothies.length;
 
         // Find best score/stars for this category
         var bestStars = 0;
         var bestScore = 0;
-        var tierOrder = ['trainee', 'crew', 'shiftlead'];
+        var tierOrder = ['easy', 'medium', 'hard'];
         tierOrder.forEach(function(tier) {
           var key = cat.id + '-' + tier;
           if (progress.scores[key]) {
@@ -1605,17 +1605,17 @@
       var diffSection = document.getElementById('difficulty-section');
       diffSection.style.display = 'flex';
 
-      var tierUnlocks = progress.unlocks.tiers[catId] || ["trainee"];
+      var tierUnlocks = progress.unlocks.tiers[catId] || ["easy"];
 
       var html = '';
       DIFFICULTIES.forEach(function(diff) {
-        var diffUnlocked = tierUnlocks.indexOf(diff.id) !== -1;
+        var diffUnlocked = true;
         var scoreKey = catId + '-' + diff.id;
         var savedScore = progress.scores[scoreKey];
 
         html += '<button class="difficulty-btn" ' + (diffUnlocked ? '' : 'disabled') + ' onclick="startShift(\'' + catId + '\', \'' + diff.id + '\')">';
         html += (diffUnlocked ? '' : '🔒 ') + diff.name;
-        if (diff.timer > 0) html += ' <small>(' + diff.timer + 's)</small>';
+        if (diff.timer > 0) html += ' <small>(' + Math.floor(diff.timer / 60) + 'min)</small>';
         if (savedScore) {
           html += '<span class="diff-best">' + '★'.repeat(savedScore.stars) + '☆'.repeat(3 - savedScore.stars) + ' ' + savedScore.score + 'pts</span>';
         }
@@ -2498,7 +2498,6 @@
       progress.totalShifts++;
       if (totalScore > progress.highScore) progress.highScore = totalScore;
 
-      // Save score for this category + difficulty combo
       var scoreKey = GAME_STATE.category + '-' + GAME_STATE.difficulty;
       var existing = progress.scores[scoreKey];
       if (!existing || totalScore > existing.score) {
@@ -2507,44 +2506,7 @@
         progress.scores[scoreKey].stars = stars;
       }
 
-      var unlockMessages = [];
-
-      // Unlock next difficulty tier if 2+ stars
-      if (stars >= 2) {
-        var tierOrder = ['trainee', 'crew', 'shiftlead'];
-        var currentTierIdx = tierOrder.indexOf(GAME_STATE.difficulty);
-        if (currentTierIdx < tierOrder.length - 1) {
-          var nextTier = tierOrder[currentTierIdx + 1];
-          var catTiers = progress.unlocks.tiers[GAME_STATE.category];
-          if (catTiers.indexOf(nextTier) === -1) {
-            catTiers.push(nextTier);
-            var tierNames = { crew: 'Crew', shiftlead: 'Shift Lead' };
-            unlockMessages.push('Unlocked ' + tierNames[nextTier] + ' mode for ' + RECIPES[GAME_STATE.category].name + '!');
-          }
-        }
-
-        // Unlock next category
-        var catKeys = Object.keys(RECIPES);
-        var curIdx = catKeys.indexOf(GAME_STATE.category);
-        if (curIdx < catKeys.length - 1) {
-          var nextCat = catKeys[curIdx + 1];
-          if (progress.unlocks.categories.indexOf(nextCat) === -1) {
-            progress.unlocks.categories.push(nextCat);
-            unlockMessages.push('Unlocked ' + RECIPES[nextCat].name + ' category!');
-          }
-        }
-      }
-
       saveProgress(progress);
-
-      // Show unlock toasts
-      unlockMessages.forEach(function(msg, i) {
-        setTimeout(function() {
-          showToast(msg, 3500);
-        }, (i + 1) * 1000);
-      });
-
-      // Update start screen
       updateStartScreenScores();
     }
 
