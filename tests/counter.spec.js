@@ -3,33 +3,22 @@ const path = require('path');
 
 const FILE_URL = `file://${path.resolve(__dirname, '../index.html')}`;
 
-async function startTraineeShift(page) {
+async function startPracticeShift(page) {
+  await page.goto(FILE_URL);
+  await page.evaluate(() => localStorage.removeItem('jamba-trainer-progress'));
+  await page.click('text=PRACTICE');
+  await page.click('text=Goodness');
+  await page.waitForTimeout(500);
+}
+
+async function startTimedShift(page) {
   await page.goto(FILE_URL);
   await page.evaluate(() => localStorage.removeItem('jamba-trainer-progress'));
   await page.click('text=START SHIFT');
   await page.click('text=Goodness');
   await page.waitForTimeout(300);
-  await page.click('text=Trainee');
-  await page.waitForTimeout(500);
-}
-
-async function startCrewShift(page) {
-  await page.goto(FILE_URL);
-  await page.evaluate(() => {
-    const progress = {
-      scores: { "greens-trainee": { score: 300, stars: 3 } },
-      unlocks: {
-        categories: ["greens", "plant"],
-        tiers: { greens: ["trainee", "crew", "shiftlead"], plant: ["trainee"], whirld: ["trainee"] }
-      }
-    };
-    localStorage.setItem('jamba-trainer-progress', JSON.stringify(progress));
-  });
-  await page.click('text=START SHIFT');
-  await page.click('text=Goodness');
-  await page.waitForTimeout(300);
-  const crewBtn = page.locator('button').filter({ hasText: /crew/i }).first();
-  await crewBtn.click();
+  const easyBtn = page.locator('button').filter({ hasText: /easy/i }).first();
+  await easyBtn.click();
   await page.waitForTimeout(500);
 }
 
@@ -38,7 +27,7 @@ test.describe('Counter Layout', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startTraineeShift(page);
+    await startPracticeShift(page);
     const gameScreen = page.locator('#game-screen');
     await expect(gameScreen).toBeVisible();
 
@@ -52,7 +41,7 @@ test.describe('Counter Layout', () => {
   });
 
   test('counter shows order ticket with smoothie name', async ({ page }) => {
-    await startTraineeShift(page);
+    await startPracticeShift(page);
     const gameScreen = page.locator('#game-screen');
     const text = await gameScreen.textContent();
 
@@ -66,7 +55,7 @@ test.describe('Counter Layout', () => {
   });
 
   test('counter shows ingredient tiles that can be clicked', async ({ page }) => {
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Find any ingredient tile and click it
     const ingredientTile = page.locator('[class*="tile"], [class*="ingredient"]').first();
@@ -80,7 +69,7 @@ test.describe('Click-to-Scoop', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Get blender state before click
     const blenderBefore = await page.evaluate(() => GAME_STATE.blenderContents.length);
@@ -102,7 +91,7 @@ test.describe('Click-to-Scoop', () => {
   });
 
   test('clicking same ingredient multiple times increases scoop count', async ({ page }) => {
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Use evaluate to directly test the scoop function
     const result = await page.evaluate(() => {
@@ -122,7 +111,7 @@ test.describe('Click-to-Scoop', () => {
   });
 
   test('CLEAR button empties the blender', async ({ page }) => {
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Add something to blender first
     await page.evaluate(() => {
@@ -140,23 +129,9 @@ test.describe('Click-to-Scoop', () => {
   });
 });
 
-test.describe('Trainee Mode Highlights', () => {
-  test('trainee mode highlights recipe ingredients on counter', async ({ page }) => {
-    await startTraineeShift(page);
-
-    // In trainee mode, some tiles should have a highlight/glow class
-    const highlighted = page.locator('[class*="highlight"], [class*="glow"], [class*="hint"]');
-    const highlightCount = await highlighted.count();
-
-    // Should have some highlighted tiles (the recipe ingredients)
-    // A typical recipe has 5-7 ingredients, so we expect some highlights
-    expect(highlightCount).toBeGreaterThan(0);
-  });
-});
-
 test.describe('Blender Visual', () => {
   test('blender is visible on game screen', async ({ page }) => {
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     const blender = page.locator('[class*="blender"], [id*="blender"]');
     await expect(blender.first()).toBeVisible();
@@ -166,7 +141,7 @@ test.describe('Blender Visual', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Add some ingredients to blender via JS
     await page.evaluate(() => {
@@ -198,7 +173,7 @@ test.describe('No JS Errors in Game Flow', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startTraineeShift(page);
+    await startPracticeShift(page);
 
     // Interact with various parts of the counter
     const gameScreen = page.locator('#game-screen');
@@ -215,11 +190,11 @@ test.describe('No JS Errors in Game Flow', () => {
     expect(errors).toEqual([]);
   });
 
-  test('crew mode starts without errors', async ({ page }) => {
+  test('timed shift starts without errors', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startCrewShift(page);
+    await startTimedShift(page);
     const gameScreen = page.locator('#game-screen');
     await expect(gameScreen).toBeVisible();
 
