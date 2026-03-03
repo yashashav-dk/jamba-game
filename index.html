@@ -629,16 +629,6 @@
     .ing-tile.tile-ice { background: #B3E5FC; }
     .ing-tile.tile-pb { background: #D4A574; }
 
-    .ing-tile.trainee-highlight {
-      border: 2.5px solid #00E676;
-      box-shadow: 0 0 8px rgba(0,230,118,0.5);
-      animation: glowPulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 6px rgba(0,230,118,0.4); }
-      50% { box-shadow: 0 0 14px rgba(0,230,118,0.7); }
-    }
 
     /* ===== Scoop Animations ===== */
     @keyframes scoopPulse {
@@ -1806,19 +1796,8 @@
       return 'tile-powder';
     }
 
-    function isTraineeHighlight(ingredientName) {
-      if (GAME_STATE.difficulty !== 'trainee') return false;
-      var recipe = GAME_STATE.currentRecipe;
-      if (!recipe) return false;
-      for (var i = 0; i < recipe.ingredients.length; i++) {
-        if (recipe.ingredients[i].name === ingredientName) return true;
-      }
-      return false;
-    }
-
     function buildTile(name) {
       var cls = 'ing-tile ' + getTileClass(name);
-      if (isTraineeHighlight(name)) cls += ' trainee-highlight';
       return '<div class="' + cls + '" data-ing="' + name.replace(/"/g, '&quot;') + '" onclick="scoopIngredient(this, \'' + escapeQuote(name) + '\')">' + name + '</div>';
     }
 
