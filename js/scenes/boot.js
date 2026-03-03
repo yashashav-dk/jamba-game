@@ -1,4 +1,7 @@
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
-  create() { this.scene.start('Menu'); }
+  create() {
+    SpriteFactory.generate(this);
+    this.scene.start('Menu');
+  }
 }
