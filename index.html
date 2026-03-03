@@ -463,7 +463,7 @@
       max-width: 300px;
       line-height: 1.4;
       z-index: 5;
-      max-height: 260px;
+      max-height: 80px;
       overflow-y: auto;
     }
 
@@ -1824,7 +1824,7 @@
 
       var diff = DIFFICULTIES.find(function(d) { return d.id === GAME_STATE.difficulty; });
       var totalOrders = GAME_STATE.shiftOrders.length;
-      var isShiftLead = GAME_STATE.difficulty === 'shiftlead';
+
 
       var wrap = document.getElementById('counter-wrap');
       var html = '';
@@ -1844,12 +1844,7 @@
       html += '<div class="order-ticket">';
       html += '<div class="ticket-header">#' + String(index + 1).padStart(2, '0') + ' - ' + SIZE_LABELS[order.size] + '</div>';
       html += '<div style="font-weight:700;margin-bottom:4px;">' + order.recipe.name + '</div>';
-      if (!isShiftLead) {
-        // Trainee and Crew show ingredients + scoops
-        order.recipe.ingredients.forEach(function(ing) {
-          html += '<div class="ticket-item"><span>' + ing.name + '</span><span>' + ing[order.size] + '</span></div>';
-        });
-      }
+
       html += '</div>';
 
       // Score area (empty spacer for grid)
