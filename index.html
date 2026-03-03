@@ -1433,7 +1433,7 @@
       missedRecipes: [],
       currentRecipe: null,
       shiftOrders: [],
-      traineeState: null,
+
       isRetry: false,
       allergenScore: 0,
       isPracticeShift: false,
@@ -1488,6 +1488,25 @@
           });
           if (typeof parsed.totalShifts !== 'number') parsed.totalShifts = 0;
           if (typeof parsed.highScore !== 'number') parsed.highScore = 0;
+          // Migrate old tier IDs
+          var tierMap = { trainee: 'easy', crew: 'medium', shiftlead: 'hard' };
+          catKeys.forEach(function(k) {
+            if (parsed.unlocks.tiers[k]) {
+              parsed.unlocks.tiers[k] = parsed.unlocks.tiers[k].map(function(t) {
+                return tierMap[t] || t;
+              });
+            }
+          });
+          // Migrate old score keys
+          var newScores = {};
+          Object.keys(parsed.scores).forEach(function(key) {
+            var newKey = key;
+            Object.keys(tierMap).forEach(function(old) {
+              newKey = newKey.replace('-' + old, '-' + tierMap[old]);
+            });
+            newScores[newKey] = parsed.scores[key];
+          });
+          parsed.scores = newScores;
           return parsed;
         }
       } catch(e) {
@@ -1529,7 +1548,7 @@
         var catKeys = Object.keys(RECIPES);
         var details = [];
         catKeys.forEach(function(catId) {
-          var tierOrder = ['trainee', 'crew', 'shiftlead'];
+          var tierOrder = ['easy', 'medium', 'hard'];
           var best = null;
           tierOrder.forEach(function(tier) {
             var key = catId + '-' + tier;
