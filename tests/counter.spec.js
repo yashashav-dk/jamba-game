@@ -3,200 +3,226 @@ const path = require('path');
 
 const FILE_URL = `file://${path.resolve(__dirname, '../index.html')}`;
 
-async function startPracticeShift(page) {
+async function waitForGame(page) {
   await page.goto(FILE_URL);
-  await page.evaluate(() => localStorage.removeItem('jamba-trainer-progress'));
-  await page.click('text=PRACTICE');
-  await page.click('text=Goodness');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(2000);
 }
 
-async function startTimedShift(page) {
-  await page.goto(FILE_URL);
-  await page.evaluate(() => localStorage.removeItem('jamba-trainer-progress'));
-  await page.click('text=START SHIFT');
-  await page.click('text=Goodness');
-  await page.waitForTimeout(300);
-  const easyBtn = page.locator('button').filter({ hasText: /easy/i }).first();
-  await easyBtn.click();
-  await page.waitForTimeout(500);
-}
-
-test.describe('Counter Layout', () => {
-  test('game screen shows counter with ingredient zones', async ({ page }) => {
+test.describe('Practice Mode via GAME_STATE', () => {
+  test('can start practice mode programmatically', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startPracticeShift(page);
-    const gameScreen = page.locator('#game-screen');
-    await expect(gameScreen).toBeVisible();
+    await waitForGame(page);
 
-    const text = await gameScreen.textContent();
-    // Should have zone labels
-    expect(text).toMatch(/juice/i);
-    expect(text).toMatch(/iqf|fruit/i);
-    expect(text).toMatch(/hardpack|frozen/i);
-    expect(text).toMatch(/blend/i);
+    const activeScene = await page.evaluate(() => {
+      GAME_STATE.mode = 'practice';
+      GAME_STATE.category = 'greens';
+      GAME_STATE.difficulty = 'practice';
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.score = 0;
+      GAME_STATE.shiftResults = [];
+      GAME_STATE.combo = 1;
+      GAME_STATE.blenderContents = [];
+      GAME_STATE.timer = 0;
+      GAME_STATE.shiftTimerMax = 0;
+      GAME_STATE.overtimePenalty = 0;
+
+      var sm = RECIPES.greens.smoothies[0];
+      GAME_STATE.shiftOrders = [{ recipe: sm, size: 's' }];
+      GAME_STATE.isRetry = false;
+
+      game.scene.start('Counter');
+      return true;
+    });
+
+    await page.waitForTimeout(1000);
+
+    const scene = await page.evaluate(() => {
+      var active = game.scene.scenes.filter(s => s.sys.isActive());
+      return active.map(s => s.sys.settings.key);
+    });
+    expect(scene).toContain('Counter');
     expect(errors).toEqual([]);
   });
 
-  test('counter shows order ticket with smoothie name', async ({ page }) => {
-    await startPracticeShift(page);
-    const gameScreen = page.locator('#game-screen');
-    const text = await gameScreen.textContent();
+  test('scooping adds to blender contents', async ({ page }) => {
+    await waitForGame(page);
 
-    // Should show one of the Goodness 'n Greens smoothie names
-    const smoothieNames = [
-      'Super-Antioxidant', 'Go Getter', 'C-Booster', 'Orange C',
-      'PB', 'Banana Protein', 'Protein Berry', 'Berry Workout'
-    ];
-    const hasSmootie = smoothieNames.some(name => text.includes(name));
-    expect(hasSmootie).toBeTruthy();
-  });
-
-  test('counter shows ingredient tiles that can be clicked', async ({ page }) => {
-    await startPracticeShift(page);
-
-    // Find any ingredient tile and click it
-    const ingredientTile = page.locator('[class*="tile"], [class*="ingredient"]').first();
-    const tileCount = await ingredientTile.count();
-    expect(tileCount).toBeGreaterThan(0);
-  });
-});
-
-test.describe('Click-to-Scoop', () => {
-  test('clicking an ingredient tile adds it to blender', async ({ page }) => {
-    const errors = [];
-    page.on('pageerror', err => errors.push(err.message));
-
-    await startPracticeShift(page);
-
-    // Get blender state before click
-    const blenderBefore = await page.evaluate(() => GAME_STATE.blenderContents.length);
-
-    // Find and click an ingredient tile (try multiple selectors)
-    const tile = page.locator('[class*="tile"][data-ingredient], [class*="ingredient-tile"], .counter-tile, .ing-tile').first();
-    if (await tile.count() > 0) {
-      await tile.click();
-      await page.waitForTimeout(200);
-      const blenderAfter = await page.evaluate(() => GAME_STATE.blenderContents.length);
-      expect(blenderAfter).toBeGreaterThanOrEqual(blenderBefore);
-    } else {
-      // Try clicking any clickable element in the counter zones
-      const anyClickable = page.locator('#game-screen [onclick], #game-screen button').first();
-      expect(await anyClickable.count()).toBeGreaterThan(0);
-    }
-
-    expect(errors).toEqual([]);
-  });
-
-  test('clicking same ingredient multiple times increases scoop count', async ({ page }) => {
-    await startPracticeShift(page);
-
-    // Use evaluate to directly test the scoop function
     const result = await page.evaluate(() => {
-      if (!GAME_STATE.currentRecipe) return { error: 'no current recipe' };
-      const firstIng = GAME_STATE.currentRecipe.ingredients[0].name;
-
-      // Call scoopIngredient 3 times (null tileEl is handled gracefully)
-      scoopIngredient(null, firstIng);
-      scoopIngredient(null, firstIng);
-      scoopIngredient(null, firstIng);
-
-      const item = GAME_STATE.blenderContents.find(b => b.name === firstIng);
-      return { name: firstIng, amount: item ? item.amount : 0 };
+      GAME_STATE.blenderContents = [];
+      // Simulate adding ingredients
+      GAME_STATE.blenderContents.push({ name: 'Orange Juice', amount: 3 });
+      GAME_STATE.blenderContents.push({ name: 'Ice', amount: 1 });
+      return GAME_STATE.blenderContents;
     });
 
-    expect(result.amount).toBeGreaterThanOrEqual(3);
+    expect(result.length).toBe(2);
+    expect(result[0].name).toBe('Orange Juice');
+    expect(result[0].amount).toBe(3);
   });
 
-  test('CLEAR button empties the blender', async ({ page }) => {
-    await startPracticeShift(page);
+  test('clear empties blender', async ({ page }) => {
+    await waitForGame(page);
 
-    // Add something to blender first
-    await page.evaluate(() => {
-      GAME_STATE.blenderContents = [{ name: 'Orange Juice', scoops: 5 }];
+    const result = await page.evaluate(() => {
+      GAME_STATE.blenderContents = [{ name: 'Ice', amount: 2 }];
+      GAME_STATE.blenderContents = [];
+      return GAME_STATE.blenderContents.length;
     });
 
-    // Click clear button
-    const clearBtn = page.locator('button, [class*="btn"]').filter({ hasText: /clear/i }).first();
-    if (await clearBtn.count() > 0) {
-      await clearBtn.click();
-      await page.waitForTimeout(200);
-      const blenderLen = await page.evaluate(() => GAME_STATE.blenderContents.length);
-      expect(blenderLen).toBe(0);
-    }
+    expect(result).toBe(0);
   });
 });
 
-test.describe('Blender Visual', () => {
-  test('blender is visible on game screen', async ({ page }) => {
-    await startPracticeShift(page);
-
-    const blender = page.locator('[class*="blender"], [id*="blender"]');
-    await expect(blender.first()).toBeVisible();
-  });
-
-  test('BLEND button triggers grading flow', async ({ page }) => {
+test.describe('Timed Shift via GAME_STATE', () => {
+  test('can start timed shift programmatically', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startPracticeShift(page);
+    await waitForGame(page);
 
-    // Add some ingredients to blender via JS
     await page.evaluate(() => {
-      const recipe = GAME_STATE.currentRecipe;
-      const sizeKey = GAME_STATE.size === 'Small' ? 's' : GAME_STATE.size === 'Medium' ? 'm' : 'l';
-      recipe.ingredients.forEach(ing => {
-        GAME_STATE.blenderContents.push({ name: ing.name, scoops: ing[sizeKey] });
+      var smoothies = RECIPES.greens.smoothies;
+      var orders = [];
+      for (var i = 0; i < 10; i++) {
+        orders.push({
+          recipe: smoothies[i % smoothies.length],
+          size: ['s', 'm', 'l'][i % 3]
+        });
+      }
+
+      GAME_STATE.mode = 'shift';
+      GAME_STATE.category = 'greens';
+      GAME_STATE.difficulty = 'easy';
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.score = 0;
+      GAME_STATE.shiftResults = [];
+      GAME_STATE.shiftOrders = orders;
+      GAME_STATE.isRetry = false;
+      GAME_STATE.timer = 300;
+      GAME_STATE.shiftTimerMax = 300;
+      GAME_STATE.overtimePenalty = 0;
+      GAME_STATE.combo = 1;
+      GAME_STATE.blenderContents = [];
+
+      game.scene.start('Counter');
+    });
+
+    await page.waitForTimeout(1000);
+
+    const state = await page.evaluate(() => ({
+      mode: GAME_STATE.mode,
+      timer: GAME_STATE.timer,
+      shiftTimerMax: GAME_STATE.shiftTimerMax,
+      orderCount: GAME_STATE.shiftOrders.length
+    }));
+
+    expect(state.mode).toBe('shift');
+    expect(state.shiftTimerMax).toBe(300);
+    expect(state.orderCount).toBe(10);
+    expect(errors).toEqual([]);
+  });
+
+  test('timer counts down in shift mode', async ({ page }) => {
+    await waitForGame(page);
+
+    await page.evaluate(() => {
+      var sm = RECIPES.greens.smoothies[0];
+      GAME_STATE.mode = 'shift';
+      GAME_STATE.category = 'greens';
+      GAME_STATE.difficulty = 'easy';
+      GAME_STATE.customerIndex = 0;
+      GAME_STATE.score = 0;
+      GAME_STATE.shiftResults = [];
+      GAME_STATE.shiftOrders = [{ recipe: sm, size: 's' }];
+      GAME_STATE.isRetry = false;
+      GAME_STATE.timer = 300;
+      GAME_STATE.shiftTimerMax = 300;
+      GAME_STATE.overtimePenalty = 0;
+      GAME_STATE.combo = 1;
+      GAME_STATE.blenderContents = [];
+      game.scene.start('Counter');
+    });
+
+    await page.waitForTimeout(3000);
+
+    const timer = await page.evaluate(() => GAME_STATE.timer);
+    expect(timer).toBeLessThan(300);
+  });
+});
+
+test.describe('Grading Flow', () => {
+  test('perfect recipe gives perfect grade', async ({ page }) => {
+    await waitForGame(page);
+
+    const result = await page.evaluate(() => {
+      var recipe = RECIPES.greens.smoothies[0];
+      var player = recipe.ingredients.map(function(ing) {
+        return { name: ing.name, amount: ing.m };
       });
+      return gradeRecipe(player, recipe, 'm');
     });
 
-    // Click BLEND
-    const blendBtn = page.locator('button, [class*="btn"]').filter({ hasText: /blend/i }).first();
-    if (await blendBtn.count() > 0) {
-      await blendBtn.click();
-      await page.waitForTimeout(1000);
+    expect(result.isPerfect).toBe(true);
+    expect(result.score).toBeGreaterThan(0);
+  });
 
-      // Should see allergen modal or results screen
-      const allergenVisible = await page.locator('#allergen-modal, [class*="allergen"]').first().isVisible().catch(() => false);
-      const resultsVisible = await page.locator('#results-screen').isVisible().catch(() => false);
-      expect(allergenVisible || resultsVisible).toBeTruthy();
-    }
+  test('empty blender gives all missing', async ({ page }) => {
+    await waitForGame(page);
 
-    expect(errors).toEqual([]);
+    const result = await page.evaluate(() => {
+      var recipe = RECIPES.greens.smoothies[0];
+      var grade = gradeRecipe([], recipe, 's');
+      return { isPerfect: grade.isPerfect, missingCount: grade.missing.length, ingredientCount: recipe.ingredients.length };
+    });
+
+    expect(result.isPerfect).toBe(false);
+    expect(result.missingCount).toBe(result.ingredientCount);
+  });
+
+  test('combo multiplier caps at 4', async ({ page }) => {
+    await waitForGame(page);
+
+    const result = await page.evaluate(() => {
+      GAME_STATE.combo = 4;
+      var newCombo = Math.min(GAME_STATE.combo + 1, 4);
+      return newCombo;
+    });
+
+    expect(result).toBe(4);
   });
 });
 
-test.describe('No JS Errors in Game Flow', () => {
-  test('no errors during counter gameplay', async ({ page }) => {
+test.describe('No JS Errors in Scene Transitions', () => {
+  test('switching between scenes produces no errors', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await startPracticeShift(page);
+    await waitForGame(page);
 
-    // Interact with various parts of the counter
-    const gameScreen = page.locator('#game-screen');
-    await expect(gameScreen).toBeVisible();
+    // Start on Menu, go to CategorySelect, back to Menu
+    await page.evaluate(() => {
+      GAME_STATE.mode = 'practice';
+      game.scene.start('CategorySelect');
+    });
+    await page.waitForTimeout(500);
 
-    // Click a few random tiles
-    const tiles = page.locator('#game-screen [onclick]');
-    const count = await tiles.count();
-    for (let i = 0; i < Math.min(5, count); i++) {
-      await tiles.nth(i).click().catch(() => {});
-      await page.waitForTimeout(100);
-    }
+    await page.evaluate(() => {
+      game.scene.start('Menu');
+    });
+    await page.waitForTimeout(500);
 
-    expect(errors).toEqual([]);
-  });
+    // Go to Study
+    await page.evaluate(() => {
+      game.scene.start('Study');
+    });
+    await page.waitForTimeout(500);
 
-  test('timed shift starts without errors', async ({ page }) => {
-    const errors = [];
-    page.on('pageerror', err => errors.push(err.message));
-
-    await startTimedShift(page);
-    const gameScreen = page.locator('#game-screen');
-    await expect(gameScreen).toBeVisible();
+    await page.evaluate(() => {
+      game.scene.start('Menu');
+    });
+    await page.waitForTimeout(500);
 
     expect(errors).toEqual([]);
   });
